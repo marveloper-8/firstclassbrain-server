@@ -10,6 +10,9 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    department:{
+        type: String
+    },
     term: {
         type: String,
         requred: true

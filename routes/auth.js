@@ -280,7 +280,7 @@ router.post('/signin-admin', (req, res) => {
 
 
 
-// Posting token to get user details
+// Using token to get user details
 router.get('/usertoken/:token', (req, res) => {
 
     const {token} = req.params
@@ -289,22 +289,26 @@ router.get('/usertoken/:token', (req, res) => {
 
         const {_id} = payload
 
-        Student.findById(_id).then(studentData => {
+        Student.findById(_id)
+        .select("-password")
+        .then(studentData => {
             if(studentData) return res.json({studentData, user: "Student"})
         })
 
-        Instructor.findById(_id).then(instructorData => {
+        Instructor.findById(_id)
+        .select("-password")
+        .then(instructorData => {
             if(instructorData) return res.json({instructorData, user: "Instructor"})
         })
 
-        Admin.findById(_id).then(adminData => {
+        Admin.findById(_id)
+        .select("-password")
+        .then(adminData => {
             if(adminData) return res.json({adminData, user: "Admin"})
         })
 
     })
 
 })
-
-
 
 module.exports = router
