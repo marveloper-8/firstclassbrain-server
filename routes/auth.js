@@ -80,30 +80,7 @@ router.post('/signin-student', (req, res) => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
                         const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
-                        const {
-                            _id, 
-                            firstName,
-                            lastName,
-                            middleName,
-                            email,
-                            phone,
-                            address,
-                            school,
-                            schoolClass,
-                            pic
-                        } = savedStudent
-                        return res.json({token, student:{
-                            _id, 
-                            firstName,
-                            lastName,
-                            middleName,
-                            email,
-                            phone,
-                            address,
-                            school,
-                            schoolClass,
-                            pic
-                        }})
+                        return res.json({token})
                     }
                     else{
                         return res.status(422).json({error: "Invalid email or password"})
@@ -206,26 +183,7 @@ router.post('/signin-instructor', (req, res) => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
                         const token = jwt.sign({_id: savedInstructor._id}, JWT_SECRET)
-                        const {
-                            _id, 
-                            firstName,
-                            lastName,
-                            otherName,
-                            phone,
-                            email,
-                            address,
-                            pic,
-                        } = savedInstructor
-                        return res.json({token, instructor:{
-                            _id, 
-                            firstName,
-                            lastName,
-                            otherName,
-                            phone,
-                            email,
-                            address,
-                            pic,
-                        }})
+                        return res.json({token})
                     }
                     else{
                         return res.status(422).json({error: "Invalid email or password"})
@@ -308,18 +266,7 @@ router.post('/signin-admin', (req, res) => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
                         const token = jwt.sign({_id: savedAdmin._id}, JWT_SECRET)
-                        const {
-                            _id, 
-                            firstName,
-                            email,
-                            pic
-                        } = savedAdmin
-                        return res.json({token, admin:{
-                            _id, 
-                            firstName,
-                            email,
-                            pic
-                        }})
+                        return res.json({token})
                     }
                     else{
                         return res.status(422).json({error: "Invalid email or password"})
@@ -330,5 +277,34 @@ router.post('/signin-admin', (req, res) => {
                 })
         })
 })
+
+
+
+// Posting token to get user details
+router.get('/usertoken/:token', (req, res) => {
+
+    const {token} = req.params
+
+    jwt.verify(token, JWT_SECRET, (err, payload) => {
+
+        const {_id} = payload
+
+        Student.findById(_id).then(studentData => {
+            if(studentData) return res.json({studentData, user: "Student"})
+        })
+
+        Instructor.findById(_id).then(instructorData => {
+            if(instructorData) return res.json({instructorData, user: "Instructor"})
+        })
+
+        Admin.findById(_id).then(adminData => {
+            if(adminData) return res.json({adminData, user: "Admin"})
+        })
+
+    })
+
+})
+
+
 
 module.exports = router
