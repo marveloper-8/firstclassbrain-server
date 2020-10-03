@@ -3,7 +3,7 @@ const {ObjectId} = mongoose.Schema.Types
 
 const postSchema = new mongoose.Schema({
     classSelected: {
-        type: String,
+        type: Number,
         required: true
     },
     subject: {
@@ -11,11 +11,11 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     term: {
-        type: String,
+        type: Number,
         requred: true
     },
     week: {
-        type: String,
+        type: Number,
         requred: true
     },
     // dateUnlock: {
