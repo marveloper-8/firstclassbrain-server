@@ -30,11 +30,7 @@ const studentSchema = new mongoose.Schema({
         required: true
     },
     schoolClass:{
-        type: String,
-        required: true
-    },
-    department:{
-        type: String,
+        type: Number,
         required: true
     },
     paid:{
