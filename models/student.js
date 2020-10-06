@@ -25,7 +25,7 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    schoolClass:{
+    classSelected:{
         type: Number,
         required: true
     },
