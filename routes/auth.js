@@ -88,6 +88,58 @@ router.post('/signin-student', (req, res) => {
         })
 })
 
+
+router.post('/web/signin-student', (req, res) => {
+    const {email, password} = req.body
+    if(!email || !password){
+        return res.status(422).json({error: "Please add email or password"})
+    }
+    Student.findOne({email:email})
+        .then(savedStudent => {
+            if(!savedStudent){
+                return res.status(422).json({error: "Invalid email or password"})
+            }
+            bcrypt.compare(password, savedStudent.password)
+                .then(doMatch => {
+                    if(doMatch){
+                        // return res.json({message: "Successfully logged in"})
+                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const {
+                            _id, 
+                            firstName,
+                            lastName,
+                            middleName,
+                            email,
+                            phone,
+                            address,
+                            school,
+                            schoolClass,
+                            pic
+                        } = savedStudent
+                        return res.json({token, student:{
+                            _id, 
+                            firstName,
+                            lastName,
+                            middleName,
+                            email,
+                            phone,
+                            address,
+                            school,
+                            schoolClass,
+                            pic
+                        }})
+                    }
+                    else{
+                        return res.status(422).json({error: "Invalid email or password"})
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        })
+})
+
+
 // list of students
 router.get('/all-student', (req, res) => {
     Student.find()
