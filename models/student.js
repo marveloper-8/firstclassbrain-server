@@ -41,71 +41,88 @@ const studentSchema = new mongoose.Schema({
      type:String,
      default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
     },
-    "1": {
+    one: {
+        "class": 1,
         "default": false,
         "type": Boolean
     },
-    "2": {
+    two: {
+        "class": 2,
         "default": false,
         "type": Boolean
     },
-    "3": {
+    three: {
+        "class": 3,
         "default": false,
         "type": Boolean
     },
-    "4": {
+    four: {
+        "class": 4,
         "default": false,
         "type": Boolean
     },
-    "5": {
+    five: {
+        "class": 5,
         "default": false,
         "type": Boolean
     },
-    "6": {
+    six: {
+        "class": 6,
         "default": false,
         "type": Boolean
     },
-    "7": {
+    seven: {
+        "class": 7,
         "default": false,
         "type": Boolean
     },
-    "8": {
+    eight: {
+        "class": 8,
         "default": false,
         "type": Boolean
     },
-    "9": {
+    nine: {
+        "class": 9,
         "default": false,
         "type": Boolean
     },
-    "10": {
+    ten: {
+        "class": 10,
         "default": false,
         "type": Boolean
     },
-    "11": {
+    eleven: {
+        "class": 11,
         "default": false,
         "type": Boolean
     },
-    "12": {
+    twelve: {
+        "class": 12,
         "default": false,
         "type": Boolean
     },
-    "13": {
+    thirteen: {
+        "class": 13,
         "default": false,
         "type": Boolean
     },
-    "14": {
+    fourteen: {
+        "class": 14,
         "default": false,
         "type": Boolean
     },
-    "15": {
+    fifteen: {
+        "class": 15,
         "default": false,
         "type": Boolean
     },
-    "16": {
+    sixteen: {
+        "class": 16,
         "default": false,
         "type": Boolean
     },
-    "17": {
+    seventeen: {
+        "class": 17,
         "default": false,
         "type": Boolean
     }
