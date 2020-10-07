@@ -41,91 +41,71 @@ const studentSchema = new mongoose.Schema({
      type:String,
      default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
     },
-    maths: {
+    1: {
         "default": "false",
         "type": Boolean
     },
-    english: {
+    2: {
         "default": "false",
         "type": Boolean
     },
-    crk: {
+    3: {
         "default": "false",
         "type": Boolean
     },
-    irk: {
+    4: {
         "default": "false",
         "type": Boolean
     },
-    social_studies: {
+    5: {
         "default": "false",
         "type": Boolean
     },
-    health_education: {
+    6: {
         "default": "false",
         "type": Boolean
     },
-    computer: {
+    7: {
         "default": "false",
         "type": Boolean
     },
-    spelling: {
+    8: {
         "default": "false",
         "type": Boolean
     },
-    language: {
+    9: {
         "default": "false",
         "type": Boolean
     },
-    diction: {
+    10: {
         "default": "false",
         "type": Boolean
     },
-    basic_science: {
+    11: {
         "default": "false",
         "type": Boolean
     },
-    business_studies: {
+    12: {
         "default": "false",
         "type": Boolean
     },
-    civic: {
+    13: {
         "default": "false",
         "type": Boolean
     },
-    basic_technology: {
+    14: {
         "default": "false",
         "type": Boolean
     },
-    biology: {
+    15: {
         "default": "false",
         "type": Boolean
     },
-    physics: {
+    16: {
         "default": "false",
         "type": Boolean
     },
-    chemistry: {
-        "default": "false",
-        "type": Boolean
-    },
-    economics: {
-        "default": "false",
-        "type": Boolean
-    },
-    commerce: {
-        "default": "false",
-        "type": Boolean
-    },
-    accounting: {
-        "default": "false",
-        "type": Boolean
-    },
-    government: {
-        "default": "false",
-        "type": Boolean
-    },
-    agric_science: {
+    17: {
         "default": "false",
         "type": Boolean
     }
