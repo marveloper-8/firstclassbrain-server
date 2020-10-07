@@ -41,72 +41,72 @@ const studentSchema = new mongoose.Schema({
      type:String,
      default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
     },
-    1: {
-        "default": "false",
+    "1": {
+        "default": false,
         "type": Boolean
     },
-    2: {
-        "default": "false",
+    "2": {
+        "default": false,
         "type": Boolean
     },
-    3: {
-        "default": "false",
+    "3": {
+        "default": false,
         "type": Boolean
     },
-    4: {
-        "default": "false",
+    "4": {
+        "default": false,
         "type": Boolean
     },
-    5: {
-        "default": "false",
+    "5": {
+        "default": false,
         "type": Boolean
     },
-    6: {
-        "default": "false",
+    "6": {
+        "default": false,
         "type": Boolean
     },
-    7: {
-        "default": "false",
+    "7": {
+        "default": false,
         "type": Boolean
     },
-    8: {
-        "default": "false",
+    "8": {
+        "default": false,
         "type": Boolean
     },
-    9: {
-        "default": "false",
+    "9": {
+        "default": false,
         "type": Boolean
     },
-    10: {
-        "default": "false",
+    "10": {
+        "default": false,
         "type": Boolean
     },
-    11: {
-        "default": "false",
+    "11": {
+        "default": false,
         "type": Boolean
     },
-    12: {
-        "default": "false",
+    "12": {
+        "default": false,
         "type": Boolean
     },
-    13: {
-        "default": "false",
+    "13": {
+        "default": false,
         "type": Boolean
     },
-    14: {
-        "default": "false",
+    "14": {
+        "default": false,
         "type": Boolean
     },
-    15: {
-        "default": "false",
+    "15": {
+        "default": false,
         "type": Boolean
     },
-    16: {
-        "default": "false",
+    "16": {
+        "default": false,
         "type": Boolean
     },
-    17: {
-        "default": "false",
+    "17": {
+        "default": false,
         "type": Boolean
     }
 })
