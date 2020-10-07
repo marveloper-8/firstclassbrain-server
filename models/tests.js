@@ -27,6 +27,10 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     questions: [{
+        id: {
+            type: Number,
+            required: true
+        },
         question: {
             type: String,
             required: true
