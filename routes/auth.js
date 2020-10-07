@@ -220,8 +220,8 @@ router.get('/all-student', (req, res) => {
         })
 })
 
-router.post("/pay-basic-one", (req,res) => {   
-    Post.findByIdAndUpdate(req.post._id, { one:  true }, {useFindAndModify: false},   
+router.post("/pay-basic-one", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { one:  true }, {useFindAndModify: false},   
     function(err) {  
     if (err) {  
         res.send(err);  
