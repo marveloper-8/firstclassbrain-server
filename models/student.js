@@ -43,13 +43,13 @@ const studentSchema = new mongoose.Schema({
     },
     one: {
         "class": 1,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     two: {
         "class": 2,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     three: {
         "class": 3,
@@ -73,8 +73,8 @@ const studentSchema = new mongoose.Schema({
     },
     seven: {
         "class": 7,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     eight: {
         "class": 8,
