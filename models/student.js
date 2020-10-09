@@ -53,23 +53,23 @@ const studentSchema = new mongoose.Schema({
     },
     three: {
         "class": 3,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     four: {
         "class": 4,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     five: {
         "class": 5,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     six: {
         "class": 6,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     seven: {
         "class": 7,
@@ -78,53 +78,53 @@ const studentSchema = new mongoose.Schema({
     },
     eight: {
         "class": 8,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     nine: {
         "class": 9,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     ten: {
         "class": 10,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     eleven: {
         "class": 11,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     twelve: {
         "class": 12,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     thirteen: {
         "class": 13,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     fourteen: {
         "class": 14,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     fifteen: {
         "class": 15,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     sixteen: {
         "class": 16,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     },
     seventeen: {
         "class": 17,
-        "default": false,
-        "type": Boolean
+        "default": "false",
+        "type": String
     }
 })
 
