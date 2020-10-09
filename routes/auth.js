@@ -221,7 +221,18 @@ router.get('/all-student', (req, res) => {
 })
 
 router.post("/pay-basic-one", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { one:  true }, {useFindAndModify: false},   
+    Student.findByIdAndUpdate(req.student._id, { one:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-two", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { two:  "true" }, {useFindAndModify: false},   
     function(err) {  
     if (err) {  
         res.send(err);  
@@ -232,7 +243,7 @@ router.post("/pay-basic-one", requireStudentLogin, (req,res) => {
 })
 
 router.post("/pay-basic-seven", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { seven:  true }, {useFindAndModify: false},   
+    Student.findByIdAndUpdate(req.student._id, { seven:  "true" }, {useFindAndModify: false},   
     function(err) {  
     if (err) {  
         res.send(err);  
