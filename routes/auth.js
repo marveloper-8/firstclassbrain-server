@@ -230,6 +230,17 @@ router.post("/pay-basic-one", requireStudentLogin, (req,res) => {
         res.send({data:"Record has been Updated..!!"});  
     });  
 })
+
+router.post("/pay-basic-seven", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { seven:  true }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
 // end of list of students
 
 
