@@ -41,12 +41,10 @@ router.post('/upload-test', (req, res) => {
     })
 })
 
-router.get('/all-courses', (req, res) => {
-    Post.find()
-        .populate("postedBy", "_id name")
-        .populate("comments.postedBy", "_id firstName")
-        .then(posts => {
-            res.json({posts})
+router.get('/all-tests', (req, res) => {
+    Test.find()
+        .then(tests => {
+            res.json({tests})
         })
         .catch(err => {
             console.log(err)
