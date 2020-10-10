@@ -3,11 +3,11 @@ const {ObjectId} = mongoose.Schema.Types
 
 const testSchema = new mongoose.Schema({
     type: {
-        type: String,
+        type: Number,
         required: true
     },
     classSelected: {
-        type: String,
+        type: Number,
         required: true
     },
     subject: {
@@ -15,11 +15,11 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     term: {
-        type: String,
+        type: Number,
         requred: true
     },
     week: {
-        type: String,
+        type: Number,
         requred: true
     },
     topic: {
@@ -31,10 +31,6 @@ const testSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
-        question: {
-            type: String,
-            required: true
-        }, 
         answerA: {
             type: String,
             required: true
