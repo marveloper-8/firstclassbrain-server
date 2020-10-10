@@ -242,8 +242,162 @@ router.post("/pay-basic-two", requireStudentLogin, (req,res) => {
     });  
 })
 
+router.post("/pay-basic-three", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { three:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-four", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { four:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-five", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { five:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-six", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { six:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
 router.post("/pay-basic-seven", requireStudentLogin, (req,res) => {   
     Student.findByIdAndUpdate(req.student._id, { seven:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-eight", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { eight:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-nine", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { nine:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-ten", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { ten:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-eleven", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { eleven:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-twelve", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { twelve:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-thirteen", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { thirteen:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-fourteen", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { fourteen:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-fifteen", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { fifteen:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-sixteen", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { sixteen:  "true" }, {useFindAndModify: false},   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
+
+router.post("/pay-basic-seventeen", requireStudentLogin, (req,res) => {   
+    Student.findByIdAndUpdate(req.student._id, { seventeen:  "true" }, {useFindAndModify: false},   
     function(err) {  
     if (err) {  
         res.send(err);  
