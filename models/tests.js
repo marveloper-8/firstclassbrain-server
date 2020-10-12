@@ -22,6 +22,10 @@ const testSchema = new mongoose.Schema({
         type: Number,
         requred: true
     },
+    time: {
+        type: Number,
+        requred: true
+    },
     topic: {
         type: String,
         required: true
