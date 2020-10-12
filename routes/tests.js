@@ -16,6 +16,7 @@ router.post('/upload-test', (req, res) => {
         term,
         week,
         topic,
+        time,
         questions,
     } = req.body
     if(!type || !classSelected || !subject || !term || !week || !topic || !questions){
@@ -30,6 +31,7 @@ router.post('/upload-test', (req, res) => {
         subject,
         term,
         week,
+        time,
         topic,
         questions
     })
