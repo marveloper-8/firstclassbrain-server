@@ -18,6 +18,11 @@ mongoose.connection.on('error', () => {
     console.log("Error connecting", err)
 })
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
+
 require('./models/student')
 require('./models/instructor')
 require('./models/admin')
