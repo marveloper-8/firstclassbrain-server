@@ -21,6 +21,12 @@ const instructorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    emailToken:{
+        type: String
+    },
+    isVerified:{
+        type: Boolean
+    },
     address:{
         type: String,
         required: true

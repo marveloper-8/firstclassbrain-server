@@ -9,6 +9,12 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    emailToken:{
+        type: String
+    },
+    isVerified:{
+        type: Boolean
+    },
     pic:{
      type:String,
      default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"

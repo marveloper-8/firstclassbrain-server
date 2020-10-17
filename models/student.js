@@ -13,6 +13,12 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    emailToken:{
+        type: String
+    },
+    isVerified:{
+        type: Boolean
+    },
     phone:{
         type: Number,
         required: true
