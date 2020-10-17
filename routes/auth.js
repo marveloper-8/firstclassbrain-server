@@ -106,11 +106,56 @@ router.post('/signup-student', (req, res) => {
                         sixteen,
                         seventeen,
                         password: hashedPassword,
-
+                        emailToken: crypto.randomBytes(64).toString('hex'),
+                        isVerified: false
                     })
                     student.save()
                         .then(student => {
-                            res.json({message: "Saved successfully"})
+
+                            let mailOptions =  {
+                                to:student.email,
+                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
+                                subject:"Confirm Your Email Address",
+                                html: `
+                                <html>
+                                    <head>
+                                        <meta charset="utf-8">
+                                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+                                    </head>
+                                    <body style="background: #f5f5f0; padding: 2em; font-family: 'Montserrat', sans-serif; margin: 0;">
+                                        <div style="background: #fff; border-radius: 15px;">
+                                            <div style="background: #008080; height:2.5em; border-radius: 15px 15px 0px 0px;"></div>
+                                            <div style="display: flex; align-items: center; padding: 2em 2em 0em 2em;">
+                                                <img src="https://firstclassbrain.com/static/media/logo.08b1aa39.jpeg" width="50px" alt="Logo">
+                                                <span style="font-size: 18px; font-weight: 600; text-transform: uppercase; padding-left: 10px;">First Class Brain</span>
+                                            </div>
+                                            <div style="padding: 2em 2em; border-radius: 10px;">
+                                                <p>Hi ${student.firstName}</p>
+                                                <p>Thanks for registering on our site. <br /> Please confirm your email address, by clicking on the link below!</p>
+                                                <a href="https://firstclassbrain.com/verify-email/student?token=${student.emailToken}">Confirm email...</a>
+                                            </div>
+                                            <div style="background: #008080; height:2.5em; border-radius: 0px 0px 15px 15px;"></div>
+                                        </div>
+                                        <footer style="text-align: center; font-size: 9px; padding: 1em 0em 3em 0em;">
+                                            <p>&copy; 2020, All rights reserved</p>
+                                            <p>No. 27, Olayiwola Street, New Oko-oba, Lagos State</p>
+                                        </footer>
+                                    </body> 
+                                </html>
+                                `
+                            }
+            
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    console.log(error)
+                                    return res.status(422).json(error)
+                                } else {
+                                    console.log('Email sent: ' + info.response)
+                                    res.json({message:"Thanks for registering, please check your email to verify your account..."})
+                                }
+                            })
+
                         })
                         .catch(err => {
                             console.log(err)
@@ -121,6 +166,23 @@ router.post('/signup-student', (req, res) => {
         .catch(err => {
             console.log(err)
         })
+})
+
+router.get('/verify-email/student', (req, res) => {
+    const {token} = req.query
+
+    Student.findOne({ emailToken: token })
+        .then( student => {
+            if(!student) {
+                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
+            }
+            student.emailToken = null
+            student.isVerified = true
+            student.save().then( stud =>{
+                res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
+            })
+        } )
+
 })
 
 router.post('/signin-student', (req, res) => {
@@ -470,11 +532,55 @@ router.post('/signup-instructor', (req, res) => {
                         address,
                         pic,
                         password: hashedPassword,
-
+                        emailToken: crypto.randomBytes(64).toString('hex'),
+                        isVerified: false
                     })
                     instructor.save()
                         .then(instructor => {
-                            res.json({message: "Saved successfully"})
+
+                            let mailOptions =  {
+                                to:instructor.email,
+                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
+                                subject:"Confirm Your Email Address",
+                                html: `
+                                <html>
+                                    <head>
+                                        <meta charset="utf-8">
+                                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+                                    </head>
+                                    <body style="background: #f5f5f0; padding: 2em; font-family: 'Montserrat', sans-serif; margin: 0;">
+                                        <div style="background: #fff; border-radius: 15px;">
+                                            <div style="background: #008080; height:2.5em; border-radius: 15px 15px 0px 0px;"></div>
+                                            <div style="display: flex; align-items: center; padding: 2em 2em 0em 2em;">
+                                                <img src="https://firstclassbrain.com/static/media/logo.08b1aa39.jpeg" width="50px" alt="Logo">
+                                                <span style="font-size: 18px; font-weight: 600; text-transform: uppercase; padding-left: 10px;">First Class Brain</span>
+                                            </div>
+                                            <div style="padding: 2em 2em; border-radius: 10px;">
+                                                <p>Hi ${instructor.firstName}</p>
+                                                <p>Thanks for registering on our site. <br /> Please confirm your email address, by clicking on the link below!</p>
+                                                <a href="https://firstclassbrain.com/verify-email/instructor?token=${instructor.emailToken}">Confirm email...</a>
+                                            </div>
+                                            <div style="background: #008080; height:2.5em; border-radius: 0px 0px 15px 15px;"></div>
+                                        </div>
+                                        <footer style="text-align: center; font-size: 9px; padding: 1em 0em 3em 0em;">
+                                            <p>&copy; 2020, All rights reserved</p>
+                                            <p>No. 27, Olayiwola Street, New Oko-oba, Lagos State</p>
+                                        </footer>
+                                    </body> 
+                                </html>
+                                `
+                            }
+            
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    console.log(error)
+                                    return res.status(422).json(error)
+                                } else {
+                                    console.log('Email sent: ' + info.response)
+                                    res.json({message:"Thanks for registering, please check your email to verify your account..."})
+                                }
+                            })
                         })
                         .catch(err => {
                             console.log(err)
@@ -485,6 +591,23 @@ router.post('/signup-instructor', (req, res) => {
         .catch(err => {
             console.log(err)
         })
+})
+
+router.get('/verify-email/instructor', (req, res) => {
+    const {token} = req.query
+
+    Instructor.findOne({ emailToken: token })
+        .then( instructor => {
+            if(!instructor) {
+                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
+            }
+            instructor.emailToken = null
+            instructor.isVerified = true
+            instructor.save().then( inst =>{
+                res.json({message:`Welcome to Firstclassbrain ${inst.firstName}`})
+            })
+        } )
+
 })
 
 router.post('/signin-instructor', (req, res) => {
@@ -554,11 +677,54 @@ router.post('/signup-admin', (req, res) => {
                         email,
                         pic,
                         password: hashedPassword,
-
+                        emailToken: crypto.randomBytes(64).toString('hex'),
+                        isVerified: false
                     })
                     admin.save()
                         .then(admin => {
-                            res.json({message: "Saved successfully"})
+                            let mailOptions =  {
+                                to:admin.email,
+                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
+                                subject:"Confirm Your Email Address",
+                                html: `
+                                <html>
+                                    <head>
+                                        <meta charset="utf-8">
+                                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+                                    </head>
+                                    <body style="background: #f5f5f0; padding: 2em; font-family: 'Montserrat', sans-serif; margin: 0;">
+                                        <div style="background: #fff; border-radius: 15px;">
+                                            <div style="background: #008080; height:2.5em; border-radius: 15px 15px 0px 0px;"></div>
+                                            <div style="display: flex; align-items: center; padding: 2em 2em 0em 2em;">
+                                                <img src="https://firstclassbrain.com/static/media/logo.08b1aa39.jpeg" width="50px" alt="Logo">
+                                                <span style="font-size: 18px; font-weight: 600; text-transform: uppercase; padding-left: 10px;">First Class Brain</span>
+                                            </div>
+                                            <div style="padding: 2em 2em; border-radius: 10px;">
+                                                <p>Hi ${admin.firstName}</p>
+                                                <p>Thanks for registering on our site. <br /> Please confirm your email address, by clicking on the link below!</p>
+                                                <a href="https://firstclassbrain.com/verify-email/admin?token=${admin.emailToken}">Confirm email...</a>
+                                            </div>
+                                            <div style="background: #008080; height:2.5em; border-radius: 0px 0px 15px 15px;"></div>
+                                        </div>
+                                        <footer style="text-align: center; font-size: 9px; padding: 1em 0em 3em 0em;">
+                                            <p>&copy; 2020, All rights reserved</p>
+                                            <p>No. 27, Olayiwola Street, New Oko-oba, Lagos State</p>
+                                        </footer>
+                                    </body> 
+                                </html>
+                                `
+                            }
+            
+                            transporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    console.log(error)
+                                    return res.status(422).json(error)
+                                } else {
+                                    console.log('Email sent: ' + info.response)
+                                    res.json({message:"Thanks for registering, please check your email to verify your account..."})
+                                }
+                            })
                         })
                         .catch(err => {
                             console.log(err)
@@ -569,6 +735,23 @@ router.post('/signup-admin', (req, res) => {
         .catch(err => {
             console.log(err)
         })
+})
+
+router.get('/verify-email/admin', (req, res) => {
+    const {token} = req.query
+
+    Admin.findOne({ emailToken: token })
+        .then( savedAdmin => {
+            if(!savedAdmin) {
+                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
+            }
+            savedAdmin.emailToken = null
+            savedAdmin.isVerified = true
+            savedAdmin.save().then( admin =>{
+                res.json({message:`Welcome to Firstclassbrain ${admin.firstName}`})
+            })
+        } )
+
 })
 
 router.post('/signin-admin', (req, res) => {
