@@ -89,22 +89,6 @@ router.get('/course-details/:postId', (req, res) => {
     })
 })
 
-router.get('/courses-detail/:id', (req, res) => {
-    Post.findOne({_id: req.params.id})
-    .then(post => {
-        Post.find({postId: req.params.id})
-        .populate("postedBy", "_id propertyName")
-        .exec((err, posts) => {
-            if(err){
-                return res.status(422).json({error: err})
-            }
-            res.json({post, posts})
-        })
-    }).catch(err => {
-        return res.status(404).json({error: "Property not found"})
-    })
-})
-
 
 
 router.delete('/delete-post/:postId', (req, res) => {
