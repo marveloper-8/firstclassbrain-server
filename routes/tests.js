@@ -53,32 +53,16 @@ router.get('/all-tests', (req, res) => {
         })
 })
 
-router.get('/course-details/:postId', (req, res) => {
-    Post.findOne({_id: req.params.postId})
-    .then(post => {
-        Post.find({postId: req.params.postId})
-        .populate("postedBy", "_id courseTitle")
-        .exec((err, posts) => {
+router.get('/test-details/:testId', (req, res) => {
+    Test.findOne({_id: req.params.testId})
+    .then(test => {
+        Test.find({testId: req.params.testId})
+        .populate("postedBy", "_id topic")
+        .exec((err, tests) => {
             if(err){
                 return res.status(422).json({error: err})
             }
-            res.json({post, posts})
-        })
-    }).catch(err => {
-        return res.status(404).json({error: "Property not found"})
-    })
-})
-
-router.get('/courses-detail/:id', (req, res) => {
-    Post.findOne({_id: req.params.id})
-    .then(post => {
-        Post.find({postId: req.params.id})
-        .populate("postedBy", "_id propertyName")
-        .exec((err, posts) => {
-            if(err){
-                return res.status(422).json({error: err})
-            }
-            res.json({post, posts})
+            res.json({test, tests})
         })
     }).catch(err => {
         return res.status(404).json({error: "Property not found"})

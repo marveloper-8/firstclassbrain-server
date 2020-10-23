@@ -9,10 +9,6 @@ const instructorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    otherName:{
-        type: String,
-        required: false
-    },
     phone:{
         type: Number,
         required: true
@@ -26,10 +22,6 @@ const instructorSchema = new mongoose.Schema({
     },
     isVerified:{
         type: Boolean
-    },
-    address:{
-        type: String,
-        required: true
     },
     password:{
         type: String,
