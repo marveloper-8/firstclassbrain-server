@@ -71,14 +71,14 @@ router.get('/test-details/:testId', (req, res) => {
 
 
 
-router.delete('/delete-post/:postId', (req, res) => {
-    Post.findOne({_id: req.params.postId})
+router.delete('/delete-test/:testId', (req, res) => {
+    Test.findOne({_id: req.params.testId})
     .populate("postedBy", "_id")
-    .exec((err, post) => {
-        if(err || !post){
+    .exec((err, test) => {
+        if(err || !test){
             return res.status(422).json({error: err})
         }
-        post.remove()
+        test.remove()
         .then(result => {
             res.json({message: "successfully deleted"})
         }).catch(err => {
