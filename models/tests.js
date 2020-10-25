@@ -14,10 +14,6 @@ const testSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    question: {
-        type: String,
-        required: true
-    },
     term: {
         type: Number,
         requred: true
@@ -37,6 +33,10 @@ const testSchema = new mongoose.Schema({
     questions: [{
         id: {
             type: Number,
+            required: true
+        },
+        question: {
+            type: String,
             required: true
         },
         answerA: {
