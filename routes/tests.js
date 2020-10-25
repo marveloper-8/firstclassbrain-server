@@ -13,13 +13,14 @@ router.post('/upload-test', (req, res) => {
         type,
         classSelected,
         subject,
+        question,
         term,
         week,
         topic,
         time,
         questions,
     } = req.body
-    if(!type || !classSelected || !subject || !term || !week || !topic || !questions){
+    if(!type || !classSelected || !subject || !question || !term || !week || !topic || !questions){
         return res.status(422).json({error: "Please add all the fields"})
     }
 
@@ -29,6 +30,7 @@ router.post('/upload-test', (req, res) => {
         type,
         classSelected,
         subject,
+        question,
         term,
         week,
         time,

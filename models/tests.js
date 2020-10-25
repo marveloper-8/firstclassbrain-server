@@ -14,6 +14,10 @@ const testSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    question: {
+        type: String,
+        required: true
+    },
     term: {
         type: Number,
         requred: true
