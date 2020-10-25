@@ -54,9 +54,9 @@ router.get('/all-tests', (req, res) => {
 })
 
 router.get('/test-details/:testId', (req, res) => {
-    Test.findOne({_id: req.params.testId})
+    Test.findOne({_id: req.params.id})
     .then(test => {
-        Test.find({testId: req.params.testId})
+        Test.find({id: req.params.id})
         .populate("postedBy", "_id topic")
         .exec((err, tests) => {
             if(err){
