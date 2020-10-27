@@ -310,6 +310,22 @@ router.get('/all-student', (req, res) => {
         })
 })
 
+router.post('/verify/pay-basic-one/:reference', (req,res) => {
+
+    const {reference} = req.params
+
+    var mainres = res
+
+    router.get( `https://api.paystack.co/transaction/verify/${reference}`, (req,res) => {
+        if(!res) {
+            return mainres.json({err: "Error"})
+        }
+        mainres.json({data: res.data})
+    })
+
+
+})
+
 router.post("/pay-basic-one", requireStudentLogin, (req,res) => {   
     Student.findByIdAndUpdate(req.student._id, { one:  "true" }, {useFindAndModify: false},   
     function(err) {  
