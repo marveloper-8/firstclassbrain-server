@@ -34,6 +34,7 @@ app.use(express.json())
 app.use(require('./routes/auth'))
 app.use(require('./routes/courses'))
 app.use(require('./routes/tests'))
+app.use(require('./routes/paystack'))
 
 if(process.env.NODE_ENV=="production"){
     app.use(express.static('client/build'))

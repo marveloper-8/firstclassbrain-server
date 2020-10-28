@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
+const moment = require('moment')
 
 
 const Student = mongoose.model("Student")
@@ -15,7 +16,7 @@ const { Contact } = require('../models/contact')
 
 const requireStudentLogin = require('../middleware/requireStudentLogin')
 
-const {SENDGRID_API, EMAIL, JWT_SECRET} = require('../config/keys')
+const {SENDGRID_API, EMAIL, PASSWORD, HOST, JWT_SECRET} = require('../config/keys')
 
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport')
@@ -27,18 +28,53 @@ const sendgridTransport = require('nodemailer-sendgrid-transport')
 // }))
 
 const transporter = nodemailer.createTransport({
-    host: "firstclassbrain.com",
+    host: HOST,
     port: 25,
     secure: false,
     auth: {
-      user: "password@firstclassbrain.com",
-      pass: "Firstclassbrain2345"
+      user: EMAIL,
+      pass: PASSWORD
     },
     tls: {
         rejectUnauthorized: false
     }
 })
 
+// router.get('/verify-email/student', (req, res) => {
+//     const {token} = req.query
+
+//     Student.findOne({ emailToken: token })
+//         .then( student => {
+//             if(!student) {
+//                 return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
+//             }
+//             student.emailToken = null
+//             student.isVerified = true
+//             student.save().then( stud =>{
+//                 res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
+//             })
+//         } )
+
+// })
+
+console.log(moment().format('L'))
+
+// router.get('/courses', requireStudentLogin, (req, res) => {
+
+//     Student.findOne(req.student._id)
+//         .then( student => {
+
+//             //  check date
+
+//             //  Then check if there's enough fund
+
+//             //  Display the course
+
+            
+//         } )
+    
+
+// })
 
 router.post('/signup-student', (req, res) => {
     const {
@@ -168,23 +204,6 @@ router.post('/signup-student', (req, res) => {
         })
 })
 
-router.get('/verify-email/student', (req, res) => {
-    const {token} = req.query
-
-    Student.findOne({ emailToken: token })
-        .then( student => {
-            if(!student) {
-                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
-            }
-            student.emailToken = null
-            student.isVerified = true
-            student.save().then( stud =>{
-                res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
-            })
-        } )
-
-})
-
 router.post('/signin-student', (req, res) => {
     const {email, password} = req.body
     if(!email || !password){
@@ -310,21 +329,29 @@ router.get('/all-student', (req, res) => {
         })
 })
 
-router.post('/verify/pay-basic-one/:reference', (req,res) => {
+// router.post('/verify/pay-basic-one/:reference', (req,res) => {
 
-    const {reference} = req.params
+//     // const {reference} = req.params
 
-    var mainres = res
+//     // var mainres = res
 
-    router.get( `https://api.paystack.co/transaction/verify/${reference}`, (req,res) => {
-        if(!res) {
-            return mainres.json({err: "Error"})
-        }
-        mainres.json({data: res.data})
-    })
+//     // router.get( `https://api.paystack.co/transaction/verify/${reference}`, (req,res) => {
+//     //     if(!res) {
+//     //         return mainres.json({err: "Error"})
+//     //     }
+//     //     mainres.json({data: res.data})
+//     // })
+
+//     var varDate = new Date(01-10-2021)
+//     var today = new Date();
+
+//     console.log(varDate.getFullYear())
+//     console.log(today)
 
 
-})
+
+
+// })
 
 router.post("/pay-basic-one", requireStudentLogin, (req,res) => {   
     Student.findByIdAndUpdate(req.student._id, { one:  "true" }, {useFindAndModify: false},   
