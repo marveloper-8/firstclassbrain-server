@@ -9,7 +9,7 @@ const {verifyPayment} = require('../config/paystack')(request)
 
 // const Donor = require('../models/Donor')
 
-router.post('/verify/pay-basic-one/:reference', requireStudentLogin, (req,res) => {
+router.post('/verify/payment/:reference', requireStudentLogin, (req,res) => {
 
     const {reference} = req.params
 
@@ -20,6 +20,11 @@ router.post('/verify/pay-basic-one/:reference', requireStudentLogin, (req,res) =
             return res.status(422).json({error})
         }
         response = JSON.parse(body)
+        
+        if (response.status === false) {
+            return res.status(422).json({error: "Error user not found..."})
+        }
+
         res.json({data: response.data}) 
         console.log(response)
 

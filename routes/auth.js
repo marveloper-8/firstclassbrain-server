@@ -16,7 +16,7 @@ const { Contact } = require('../models/contact')
 
 const requireStudentLogin = require('../middleware/requireStudentLogin')
 
-const {SENDGRID_API, EMAIL, PASSWORD, HOST, JWT_SECRET} = require('../config/keys')
+const {EMAIL, PASSWORD, HOST, JWT_SECRET} = require('../config/keys')
 
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport')
@@ -1112,6 +1112,59 @@ router.post('/contact', (req,res) => {
         }
     })
     
+})
+
+router.put('/updatepic/admin',requireStudentLogin,(req,res)=>{
+
+    const { pic } = req.body
+
+    Admin.findByIdAndUpdate(req.admin._id,{$set:{pic}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Picture cannot post"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
+router.put('/updatepic/instructor',requireStudentLogin,(req,res)=>{
+
+    const { pic } = req.body
+
+    Instructor.findByIdAndUpdate(req.instructor._id,{$set:{pic}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Picture cannot post"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
+router.put('/updatepic/student',requireStudentLogin,(req,res)=>{
+
+    const { pic } = req.body
+
+    Student.findByIdAndUpdate(req.student._id,{$set:{pic}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Picture cannot post"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
+
+router.put('/settings',requireStudentLogin,(req,res)=>{
+
+    const { classSelected } = req.body
+
+    Student.findByIdAndUpdate(req.student._id,{$set:{classSelected}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Pls try again, an error occurred..!!"})
+            }
+            res.json({message:"Class updated successfully..!!", result})
+    })
 })
 
 module.exports = router
