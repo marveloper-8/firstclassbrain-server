@@ -63,7 +63,7 @@ router.post('/upload-course', (req, res) => {
 
 router.get('/all-courses', (req, res) => {
     Post.find()
-        .populate("postedBy", "_id name")
+        .populate("postedBy", "_id firstName")
         .populate("comments.postedBy", "_id firstName")
         .then(posts => {
             res.json({posts})
@@ -72,7 +72,6 @@ router.get('/all-courses', (req, res) => {
             console.log(err)
         })
 })
-
 router.get('/course-details/:postId', (req, res) => {
     Post.findOne({_id: req.params.postId})
     .then(post => {
