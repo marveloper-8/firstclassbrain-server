@@ -19,6 +19,25 @@ const paystack = (request) => {
     //     request.post(options, callback)
     // }
 
+    const charge_authorization = (params, mycallback) => {
+        const options = {
+            url : 'https://api.paystack.co/transaction/charge_authorization',
+            method: 'POST',
+            headers : {
+                authorization: MySecretKey,
+                'content-type': 'application/json'
+            },
+            body: params
+        }
+
+        const callback = (error, response, body) => {
+            return mycallback(error, body)
+        }
+        
+        request(options, callback)
+        
+    }
+
     const verifyPayment = (ref, mycallback) => {
         const options = {
             url : 'https://api.paystack.co/transaction/verify/'+encodeURIComponent(ref),
@@ -34,7 +53,7 @@ const paystack = (request) => {
         request(options, callback)
     }
 
-    return {verifyPayment};
+    return {verifyPayment, charge_authorization}
 }
 
 module.exports = paystack;

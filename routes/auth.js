@@ -16,7 +16,7 @@ const { Contact } = require('../models/contact')
 
 const requireStudentLogin = require('../middleware/requireStudentLogin')
 
-const {EMAIL, PASSWORD, HOST, JWT_SECRET} = require('../config/keys')
+const {EMAIL, PASSWORD, MAILHOST, JWT_SECRET} = require('../config/keys')
 
 const nodemailer = require('nodemailer')
 const sendgridTransport = require('nodemailer-sendgrid-transport')
@@ -27,10 +27,10 @@ const sendgridTransport = require('nodemailer-sendgrid-transport')
 //     }
 // }))
 
-const transporter = nodemailer.createTransport({
-    host: HOST,
-    port: 25,
-    secure: false,
+var transporter = nodemailer.createTransport({
+    host: MAILHOST,
+    port: 465,
+    secure: true,
     auth: {
       user: EMAIL,
       pass: PASSWORD
@@ -39,6 +39,25 @@ const transporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 })
+
+// var transporter = nodemailer.createTransport(smtpTransport({
+//     host: 'mail.mysmtpserver.com',
+//     port: 587,
+//     auth: {
+//         user: 'username@mysmtpserver.com',
+//         pass: 'mypasswd'
+//     },
+//     tls: {rejectUnauthorized: false},
+//     debug:true
+// })
+// );
+
+// transporter.verify(function(error, success) {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       console.log("MAILER CONNECTION VERIFIED"), success;
+// }})
 
 // router.get('/verify-email/student', (req, res) => {
 //     const {token} = req.query
@@ -58,6 +77,8 @@ const transporter = nodemailer.createTransport({
 // })
 
 console.log(moment().format('L'))
+
+console.log(moment().add(7, 'days').calendar())
 
 // router.get('/courses', requireStudentLogin, (req, res) => {
 
@@ -85,23 +106,6 @@ router.post('/signup-student', (req, res) => {
         address,
         classSelected,
         pic,
-        one,
-        two,
-        three,
-        four,
-        five,
-        six,
-        seven,
-        eight,
-        nine,
-        ten,
-        eleven,
-        twelve,
-        thirteen,
-        fourteen,
-        fifteen,
-        sixteen,
-        seventeen,
         password
     } = req.body
     if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
@@ -122,23 +126,6 @@ router.post('/signup-student', (req, res) => {
                         address,
                         classSelected,
                         pic,
-                        one,
-                        two,
-                        three,
-                        four,
-                        five,
-                        six,
-                        seven,
-                        eight,
-                        nine,
-                        ten,
-                        eleven,
-                        twelve,
-                        thirteen,
-                        fourteen,
-                        fifteen,
-                        sixteen,
-                        seventeen,
                         password: hashedPassword,
                         emailToken: crypto.randomBytes(64).toString('hex'),
                         isVerified: false
@@ -147,8 +134,8 @@ router.post('/signup-student', (req, res) => {
                         .then(student => {
 
                             let mailOptions =  {
-                                to:student.email,
                                 from:'"Firstclassbrain" <password@firstclassbrain.com>',
+                                to:student.email,
                                 subject:"Confirm Your Email Address",
                                 html: `
                                 <html>
@@ -183,7 +170,7 @@ router.post('/signup-student', (req, res) => {
                             transporter.sendMail(mailOptions, (error, info) => {
                                 if (error) {
                                     console.log(error)
-                                    return res.status(422).json(error)
+                                    return res.status(422).json({error})
                                 } else {
                                     console.log('Email sent: ' + info.response)
                                     res.json({message:"Thanks for registering, please check your email to verify your account..."})
@@ -254,24 +241,7 @@ router.post('/web/signin-student', (req, res) => {
                             phone,
                             address,
                             school,
-                            classSelected,
-                            one,
-                            two,
-                            three,
-                            four,
-                            five,
-                            six,
-                            seven,
-                            eight,
-                            nine,
-                            ten,
-                            eleven,
-                            twelve,
-                            thirteen,
-                            fourteen,
-                            fifteen,
-                            sixteen,
-                            seventeen,
+                            schoolClass,
                             pic
                         } = savedStudent
                         return res.json({token, student:{
@@ -283,24 +253,7 @@ router.post('/web/signin-student', (req, res) => {
                             phone,
                             address,
                             school,
-                            classSelected,
-                            one,
-                            two,
-                            three,
-                            four,
-                            five,
-                            six,
-                            seven,
-                            eight,
-                            nine,
-                            ten,
-                            eleven,
-                            twelve,
-                            thirteen,
-                            fourteen,
-                            fifteen,
-                            sixteen,
-                            seventeen,
+                            schoolClass,
                             pic
                         }})
                     }
