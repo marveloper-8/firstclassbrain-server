@@ -103,13 +103,12 @@ router.post('/signup-student', (req, res) => {
         lastName,
         email,
         phone,
-        dateOfBirth,
         address,
         classSelected,
         pic,
         password
     } = req.body
-    if(!firstName || !lastName || !email || !phone || !dateOfBirth || !address || !classSelected || !password){
+    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Student.findOne({email: email})
@@ -124,7 +123,6 @@ router.post('/signup-student', (req, res) => {
                         lastName,
                         email,
                         phone,
-                        dateOfBirth,
                         address,
                         classSelected,
                         pic,
@@ -502,14 +500,12 @@ router.post('/signup-instructor', (req, res) => {
     const {
         firstName,
         lastName,
-        otherName,
         phone,
         email,
-        address,
         pic,
         password
     } = req.body
-    if(!firstName || !lastName || !otherName || !phone || !email || !address || !password){
+    if(!firstName || !lastName || !phone || !email || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Instructor.findOne({email: email})
@@ -522,10 +518,8 @@ router.post('/signup-instructor', (req, res) => {
                     const instructor = new Instructor({
                         firstName,
                         lastName,
-                        otherName,
                         phone,
                         email,
-                        address,
                         pic,
                         password: hashedPassword,
                         emailToken: crypto.randomBytes(64).toString('hex'),
