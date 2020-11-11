@@ -39,100 +39,38 @@ const studentSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    expiryDate: {
+        type: Date,
+    },
+    paymentReference:{
+        type: String
+    },
     password:{
         type: String,
         required: true
     },
-    resetToken:String,
-    expireToken:Date,
+    resetToken:{
+        type: String,
+    },
+    expireToken:{
+        type: Date,
+    },
     pic:{
      type:String,
      default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
     },
-    one: {
-        "class": 1,
-        "default": "false",
-        "type": String
-    },
-    two: {
-        "class": 2,
-        "default": "false",
-        "type": String
-    },
-    three: {
-        "class": 3,
-        "default": "false",
-        "type": String
-    },
-    four: {
-        "class": 4,
-        "default": "false",
-        "type": String
-    },
-    five: {
-        "class": 5,
-        "default": "false",
-        "type": String
-    },
-    six: {
-        "class": 6,
-        "default": "false",
-        "type": String
-    },
-    seven: {
-        "class": 7,
-        "default": "false",
-        "type": String
-    },
-    eight: {
-        "class": 8,
-        "default": "false",
-        "type": String
-    },
-    nine: {
-        "class": 9,
-        "default": "false",
-        "type": String
-    },
-    ten: {
-        "class": 10,
-        "default": "false",
-        "type": String
-    },
-    eleven: {
-        "class": 11,
-        "default": "false",
-        "type": String
-    },
-    twelve: {
-        "class": 12,
-        "default": "false",
-        "type": String
-    },
-    thirteen: {
-        "class": 13,
-        "default": "false",
-        "type": String
-    },
-    fourteen: {
-        "class": 14,
-        "default": "false",
-        "type": String
-    },
-    fifteen: {
-        "class": 15,
-        "default": "false",
-        "type": String
-    },
-    sixteen: {
-        "class": 16,
-        "default": "false",
-        "type": String
-    },
-    seventeen: {
-        "class": 17,
-        "default": "false",
-        "type": String
+    bankAuth: {
+        authorization_code: { type: String },
+        card_type: { type: String },
+        last4: { type: String },
+        exp_month: { type: String },
+        exp_year: { type: String },
+        bin: { type: String },
+        bank: { type: String },
+        channel: { type: String },
+        signature: { type: String },
+        reusable: { type: Boolean },
+        country_code: { type: String },
     }
 })
 

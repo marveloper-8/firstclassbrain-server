@@ -15,7 +15,7 @@ mongoose.connection.on('connected', () => {
     console.log("Connected to mongo")
 })
 mongoose.connection.on('error', () => {
-    console.log("Error connecting", err)
+    console.log("Error connecting")
 })
 
 app.use((req, res, next) => {
