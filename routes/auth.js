@@ -6,6 +6,8 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const moment = require('moment')
 
+const { O } = mongoose
+
 
 const Student = mongoose.model("Student")
 const Instructor = mongoose.model("Instructor")
@@ -15,6 +17,7 @@ const { Contact } = require('../models/contact')
 
 
 const requireStudentLogin = require('../middleware/requireStudentLogin')
+const requireAdminLogin = require('../middleware/requireAdminLogin')
 
 const {EMAIL, PASSWORD, MAILHOST, JWT_SECRET} = require('../config/keys')
 
@@ -59,22 +62,22 @@ var transporter = nodemailer.createTransport({
 //       console.log("MAILER CONNECTION VERIFIED"), success;
 // }})
 
-// router.get('/verify-email/student', (req, res) => {
-//     const {token} = req.query
+router.get('/verify-email/student', (req, res) => {
+    const {token} = req.query
 
-//     Student.findOne({ emailToken: token })
-//         .then( student => {
-//             if(!student) {
-//                 return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
-//             }
-//             student.emailToken = null
-//             student.isVerified = true
-//             student.save().then( stud =>{
-//                 res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
-//             })
-//         } )
+    Student.findOne({ emailToken: token })
+        .then( student => {
+            if(!student) {
+                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
+            }
+            student.emailToken = null
+            student.isVerified = true
+            student.save().then( stud =>{
+                res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
+            })
+        } )
 
-// })
+})
 
 console.log(moment().format('L'))
 
@@ -282,216 +285,6 @@ router.get('/all-student', (req, res) => {
         })
 })
 
-// router.post('/verify/pay-basic-one/:reference', (req,res) => {
-
-//     // const {reference} = req.params
-
-//     // var mainres = res
-
-//     // router.get( `https://api.paystack.co/transaction/verify/${reference}`, (req,res) => {
-//     //     if(!res) {
-//     //         return mainres.json({err: "Error"})
-//     //     }
-//     //     mainres.json({data: res.data})
-//     // })
-
-//     var varDate = new Date(01-10-2021)
-//     var today = new Date();
-
-//     console.log(varDate.getFullYear())
-//     console.log(today)
-
-
-
-
-// })
-
-router.post("/pay-basic-one", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { one:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-two", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { two:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-three", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { three:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-four", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { four:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-five", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { five:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-six", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { six:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-seven", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { seven:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-eight", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { eight:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-nine", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { nine:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-ten", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { ten:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-eleven", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { eleven:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-twelve", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { twelve:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-thirteen", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { thirteen:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-fourteen", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { fourteen:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-fifteen", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { fifteen:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-sixteen", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { sixteen:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
-
-router.post("/pay-basic-seventeen", requireStudentLogin, (req,res) => {   
-    Student.findByIdAndUpdate(req.student._id, { seventeen:  "true" }, {useFindAndModify: false},   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
-})
 // end of list of students
 
 
@@ -940,7 +733,7 @@ router.post('/student/reset-password',(req,res)=>{
         if(err){
             console.log(err)
         }
-                
+        
         const token = buffer.toString("hex")
         Student.findOne({email:req.body.email})
         .then(student=>{
@@ -1119,5 +912,87 @@ router.put('/settings',requireStudentLogin,(req,res)=>{
             res.json({message:"Class updated successfully..!!", result})
     })
 })
+
+router.put('/admin/coupon', requireAdminLogin, (req,res) => {
+
+    const { subInterval, email } = req.body
+
+    if( !subInterval || !email ){
+        return res.status(422).json({error: "Please add all the fields"})
+    }
+
+    // Student.findOne({email})
+    //         .select("-password")
+    //         .then(student=>{
+    //             if(!student){
+    //                 return res.status(422).json({error:"User is not a student..."})
+    //             }
+
+
+    //             student.expiryDate = moment().add(7, 'days').calendar()
+    //             student.paid = true
+    //             // student.paymentReference = payRef
+    //             // student.bankAuth =  { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code }
+    //             student.save().then((savedstudent)=>{
+    //                    res.json({message:"Paid succesfully...", savedstudent: savedstudent})
+    //             })
+
+    //             console.log(student)
+    //         })
+    //         .catch((err) => console.log(err))
+
+    Student.findOne({email})
+        .select("-password")
+        .then((student) => {
+
+            if(!student){
+                return res.status(422).json({error:"User not a student..."})
+            }
+
+            switch (subInterval) {
+
+                case "weekly":
+                    student.expiryDate = moment().add(7, 'days').calendar()
+                    student.paid = true
+                    student.save().then((savedstudent)=>{
+                        console.log(savedstudent)
+                        const newdate = new Date(savedstudent.expiryDate)
+                        console.log('Expiry', newdate.toDateString())
+                        res.json({message:"Subscription added...", savedstudent})
+                    })
+                    break;
+
+                case "monthly":
+                    student.expiryDate = moment().add(30, 'days').calendar()
+                    student.paid = true
+                    student.save().then((savedstudent)=>{
+                        console.log(savedstudent)
+                        const newdate = new Date(savedstudent.expiryDate)
+                        console.log('Expiry', newdate.toDateString())
+                        res.json({message:"Subscription added...", savedstudent})
+                    })
+                    break;
+
+                case "yearly":
+                    student.expiryDate = moment().add(365, 'days').calendar()
+                    student.paid = true
+                    student.save().then((savedstudent)=>{
+                        console.log(savedstudent)
+                        const newdate = new Date(savedstudent.expiryDate)
+                        console.log('Expiry', newdate.toDateString())
+                        res.json({message:"Subscription added...", savedstudent})
+                    })
+                    break;
+
+                default:
+                    res.json({err: "Interval not valid..."})
+                
+            }
+        })
+        .catch(err => console.log(err))
+
+})
+
+
 
 module.exports = router

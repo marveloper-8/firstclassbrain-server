@@ -97,7 +97,8 @@ router.get('/studentcourse', requireStudentLogin, (req, res) => {
         .select("-password")
         .then(stud => {
 
-            var GivenDate = stud.expiryDate
+            var GivenDate = 'Tue Nov 10 2020'
+            // var GivenDate = stud.expiryDate
             var CurrentDate = new Date()
             GivenDate = new Date(GivenDate)
 

@@ -27,11 +27,10 @@ router.post('/upload-course', (req, res) => {
         thirdImageSlide,
         fourthImageSlide
     } = req.body
+
     if(!classSelected || !subject || !term || !week || !courseTitle || !video || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !firstImageSlide || !secondImageSlide){
         return res.status(422).json({error: "Please add all the fields"})
     }
-
-    // req.admin.password = undefined
     
     const post = new Post({
         classSelected,
@@ -270,17 +269,6 @@ router.put('/unlike', requireStudentLogin, (req, res) => {
     })
 })
 
-
-
-// Student get courses, depending on class and department
-
-// router.get('/studentcourse',requireStudentLogin,(req,res)=>{
-
-//     if(!req.student) return res.status(401).json({error: "User not a student"})
-
-//     const student_class = req.student.schoolClass
-//     const student_department = req.student.department
-
 //     /* Classes
 
 //         Nursery One
@@ -299,206 +287,6 @@ router.put('/unlike', requireStudentLogin, (req, res) => {
 //         Senior Secondary Three
 
 //     Classes */
-
-//     switch (student_class) {
-//         case "Nursery One":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Nursery Two":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary One":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary Two":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary Three":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary Four":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary Five":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Primary Six":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Junior Secondary One":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Junior Secondary Two":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Junior Secondary Three":
-//             Post.find({classSelected: student_class})
-//             .then(mycourses=>{
-//                 res.json({mycourses})
-//             })
-//             .catch(err=>{
-//                 console.log(err)
-//             })
-//             break;
-//         case "Senior Secondary One":
-//             switch (student_department) {
-//                 case 'Science': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break;
-//                 case 'Art': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//                 case 'Commercial': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//             }
-//             break;
-//         case "Secondary School Two":
-//             switch (student_department) {
-//                 case 'Science': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break;
-//                 case 'Art': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//                 case 'Commercial': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//             }
-//             break;
-//         case "Secondary School Three":
-//             switch (student_department) {
-//                 case 'Science': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break;
-//                 case 'Art': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//                 case 'Commercial': 
-//                     Post.find({classSelected: student_class, department: student_department})
-//                     .then(mycourses=>{
-//                         res.json({mycourses})
-//                     })
-//                     .catch(err=>{
-//                         console.log(err)
-//                     })
-//                     break; 
-//             }
-//             break;
-//         default:
-//             res.json({err: "No course listed"})
-//         }
-        
-// })
-
 
 
 module.exports = router
