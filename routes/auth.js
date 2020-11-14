@@ -244,7 +244,7 @@ router.post('/web/signin-student', (req, res) => {
                             phone,
                             address,
                             school,
-                            schoolClass,
+                            classSelected,
                             pic
                         } = savedStudent
                         return res.json({token, student:{
@@ -256,7 +256,7 @@ router.post('/web/signin-student', (req, res) => {
                             phone,
                             address,
                             school,
-                            schoolClass,
+                            classSelected,
                             pic
                         }})
                     }
