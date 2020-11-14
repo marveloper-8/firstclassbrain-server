@@ -20,6 +20,7 @@
     "mongoose": "^5.10.7",
     "nodemailer": "^6.4.11",
     "nodemailer-sendgrid-transport": "^0.2.0",
+    "nodemailer-smtp-transport": "^2.7.4",
     "nodemon": "^2.0.4",
     "request": "^2.88.2",
     "socket.io": "^2.3.0"

@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const moment = require('moment')
-
-const { O } = mongoose
+const nodemailer = require('nodemailer')
+var smtpTransport = require('nodemailer-smtp-transport')
 
 
 const Student = mongoose.model("Student")
@@ -21,26 +21,40 @@ const requireAdminLogin = require('../middleware/requireAdminLogin')
 
 const {EMAIL, PASSWORD, MAILHOST, JWT_SECRET} = require('../config/keys')
 
-const nodemailer = require('nodemailer')
-const sendgridTransport = require('nodemailer-sendgrid-transport')
-
 // const transporter = nodemailer.createTransport(sendgridTransport({
 //     auth:{
 //         api_key:SENDGRID_API
 //     }
 // }))
 
-var transporter = nodemailer.createTransport({
-    host: MAILHOST,
-    port: 465,
-    secure: true,
+// var transporter = nodemailer.createTransport({
+//     host: MAILHOST,
+//     port: 465,
+//     secure: true,
+//     auth: {
+//       user: EMAIL,
+//       pass: PASSWORD
+//     },
+//     tls: {
+//         rejectUnauthorized: false
+//     }
+// })
+
+// let transporter = nodemailer.createTransport(smtpTransport({
+//     service: 'gmail',
+//     host: 'smtp.gmail.com',
+//     auth: {
+//         user: 'firstclassbrain11@gmail.com',
+//         pass: 'Firstclassbrain2345'
+//     }
+// }));
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
     auth: {
-      user: EMAIL,
-      pass: PASSWORD
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
+            user: 'firstclassbrain11@gmail.com',
+            pass: 'Firstclassbrain2345'
+       }
 })
 
 // var transporter = nodemailer.createTransport(smtpTransport({
@@ -55,12 +69,13 @@ var transporter = nodemailer.createTransport({
 // })
 // );
 
-// transporter.verify(function(error, success) {
-//     if (error) {
-//       console.log(error);
-//     } else {
-//       console.log("MAILER CONNECTION VERIFIED"), success;
-// }})
+transporter.verify(function(error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("MAILER CONNECTION VERIFIED", success)
+    }
+})
 
 router.get('/verify-email/student', (req, res) => {
     const {token} = req.query
