@@ -35,6 +35,10 @@ const testSchema = new mongoose.Schema({
             type: Number,
             required: true
         },
+        question: {
+            type: String,
+            required: true
+        },
         answerA: {
             type: String,
             required: true
