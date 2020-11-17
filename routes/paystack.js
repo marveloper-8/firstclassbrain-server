@@ -12,6 +12,9 @@ const Post = mongoose.model("Post")
 
 const {verifyPayment, charge_authorization} = require('../config/paystack')(request)
 
+// cron.schedule('* * * * * *', () => {
+//     console.log('Running Cron Job');
+// })
 
 router.post('/verify/payment/:reference', (req,res) => {
 

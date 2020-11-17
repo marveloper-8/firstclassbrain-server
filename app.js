@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const app = express()
+const cron = require('node-cron')
 const PORT = process.env.PORT || 5000
 const cors = require("cors")
 const {MONGOURI} = require('./config/keys')
@@ -35,6 +36,7 @@ app.use(require('./routes/auth'))
 app.use(require('./routes/courses'))
 app.use(require('./routes/tests'))
 app.use(require('./routes/paystack'))
+
 
 if(process.env.NODE_ENV=="production"){
     app.use(express.static('client/build'))

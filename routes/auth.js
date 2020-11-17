@@ -6,9 +6,6 @@ const jwt = require('jsonwebtoken')
 const crypto = require('crypto')
 const moment = require('moment')
 
-const { O } = mongoose
-
-
 const Student = mongoose.model("Student")
 const Instructor = mongoose.model("Instructor")
 const Admin = mongoose.model("Admin")
