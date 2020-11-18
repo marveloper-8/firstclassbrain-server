@@ -802,8 +802,8 @@ router.post('/contact', (req,res) => {
     })
 
     let mailOptions =  {
-        to:'wisdomanaba83@gmail.com',
-        from: '"Team Firstclassbrain" <password@firstclassbrain.com>',
+        to:'contact@firstclassbrain.com',
+        from: `"Team Firstclassbrain " contact.email`,
         subject:`Contact Form: Message from ${first_name.charAt(0).toUpperCase() + first_name.slice(1)} ${last_name.charAt(0).toUpperCase() + last_name.slice(1)}`,
         html: `
             <html>
