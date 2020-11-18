@@ -70,7 +70,7 @@ router.get('/test-details/:testId', (req, res) => {
 })
 
 router.get('/student/test-details/:testId', (req, res) => {
-    Test.findOne({_id: req.params.testId})
+    Test.findOne({topic: req.params.testId})
     .then(test => {
         Test.find({testId: req.params.testId})
         .populate("postedBy", "topic topic")
