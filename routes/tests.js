@@ -70,10 +70,10 @@ router.get('/test-details/:testId', (req, res) => {
 })
 
 router.get('/student/test-details/:testId', (req, res) => {
-    Test.findOne({topic: req.params.testId})
+    Test.findOne({_id: req.params.testId})
     .then(test => {
         Test.find({testId: req.params.testId})
-        .populate("postedBy", "_id topic")
+        .populate("postedBy", "topic topic")
         .exec((err, tests) => {
             if(err){
                 return res.status(422).json({error: err})
