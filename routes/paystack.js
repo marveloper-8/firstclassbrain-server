@@ -123,7 +123,7 @@ router.get('/studentcourse', requireStudentLogin, (req, res) => {
          
                     response = JSON.parse(body)
 
-                    if (response.status === "false") {
+                    if (response.status === false) {
                         stud.paid = "false"
                         stud.save()
                         return res.status(422).json({error: "Bad request. please, check internet connectivity and try again...", message: 'Subscription expired you need to pay again'})
