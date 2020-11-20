@@ -85,6 +85,23 @@ router.get('/student/test-details/:testId', (req, res) => {
     })
 })
 
+router.get('/test-details/questions/:testId', (req, res) => {
+    Test.findOne({_id: req.params.testId})
+        .then(test => {
+            Test.find({testId: req.params.testId})
+            .populate("postedBy", "questions topic")
+            .exec((err, tests) => {
+                if(err){
+                    return res.status(422).json({error: err})
+                }
+                res.json({test, tests})
+            })
+        })
+        .catch(err => {
+            return res.status(404).json({error: "Questions not found"})
+        })
+})
+
 
 
 router.delete('/delete-test/:testId', (req, res) => {

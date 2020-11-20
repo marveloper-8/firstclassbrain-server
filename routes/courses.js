@@ -71,6 +71,7 @@ router.get('/all-courses', (req, res) => {
             console.log(err)
         })
 })
+
 router.get('/course-details/:postId', (req, res) => {
     Post.findOne({_id: req.params.postId})
     .then(post => {
