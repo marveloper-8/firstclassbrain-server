@@ -17,7 +17,7 @@ const studentSchema = new mongoose.Schema({
         type: String
     },
     isVerified:{
-        type: Boolean
+        type: String
     },
     phone:{
         type: Number,
@@ -32,8 +32,8 @@ const studentSchema = new mongoose.Schema({
         required: true
     },
     paid:{
-        type: Boolean,
-        default: false
+        type: String,
+        default: "false"
     },
     expiryDate: {
         type: Date,
