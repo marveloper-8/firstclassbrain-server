@@ -68,7 +68,7 @@ router.get('/verify-email/student', (req, res) => {
                 return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
             }
             student.emailToken = null
-            student.isVerified = true
+            student.isVerified = "true"
             student.save().then( stud =>{
                 res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
             })
@@ -128,7 +128,7 @@ router.post('/signup-student', (req, res) => {
                         pic,
                         password: hashedPassword,
                         emailToken: crypto.randomBytes(64).toString('hex'),
-                        isVerified: false
+                        isVerified: "false"
                     })
                     student.save()
                         .then(student => {
