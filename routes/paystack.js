@@ -49,7 +49,7 @@ router.post('/verify/payment/:reference', (req,res) => {
 
 
                 student.expiryDate = moment().add(7, 'days').calendar()
-                student.paid = true
+                student.paid = "true"
                 student.paymentReference = payRef
                 student.bankAuth =  { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code }
                 student.save().then((savedstudent)=>{
