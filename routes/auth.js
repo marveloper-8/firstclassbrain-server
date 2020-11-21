@@ -442,11 +442,12 @@ router.get('/all-instructor', (req, res) => {
 router.post('/signup-admin', (req, res) => {
     const {
         firstName,
+        lastName,
         email,
         pic,
         password
     } = req.body
-    if(!firstName || !email || !password){
+    if(!firstName || !lastName || !email || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Admin.findOne({email: email})
@@ -458,6 +459,7 @@ router.post('/signup-admin', (req, res) => {
                 .then(hashedPassword => {
                     const admin = new Admin({
                         firstName,
+                        lastName,
                         email,
                         pic,
                         password: hashedPassword,
@@ -554,6 +556,46 @@ router.post('/signin-admin', (req, res) => {
                         // return res.json({message: "Successfully logged in"})
                         const token = jwt.sign({_id: savedAdmin._id}, JWT_SECRET)
                         return res.json({token})
+                    }
+                    else{
+                        return res.status(422).json({error: "Invalid email or password"})
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        })
+})
+
+router.post('/web/signin-admin', (req, res) => {
+    const {email, password} = req.body
+    if(!email || !password){
+        return res.status(422).json({error: "Please add email or password"})
+    }
+    Admin.findOne({email:email})
+        .then(savedAdmin => {
+            if(!savedAdmin){
+                return res.status(422).json({error: "Invalid email or password"})
+            }
+            bcrypt.compare(password, savedAdmin.password)
+                .then(doMatch => {
+                    if(doMatch){
+                        // return res.json({message: "Successfully logged in"})
+                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const {
+                            _id, 
+                            firstName,
+                            lastName,
+                            email,
+                            pic
+                        } = savedStudent
+                        return res.json({token, student:{
+                            _id, 
+                            firstName,
+                            lastName,
+                            email,
+                            pic
+                        }})
                     }
                     else{
                         return res.status(422).json({error: "Invalid email or password"})
