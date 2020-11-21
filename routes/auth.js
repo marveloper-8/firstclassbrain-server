@@ -577,14 +577,14 @@ router.post('/web/signin-admin', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const token = jwt.sign({_id: savedAdmin._id}, JWT_SECRET)
                         const {
                             _id, 
                             firstName,
                             lastName,
                             email
-                        } = savedStudent
-                        return res.json({token, student:{
+                        } = savedAdmin
+                        return res.json({token, admin:{
                             _id, 
                             firstName,
                             lastName,
