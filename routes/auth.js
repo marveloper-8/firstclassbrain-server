@@ -444,7 +444,6 @@ router.post('/signup-admin', (req, res) => {
         firstName,
         lastName,
         email,
-        pic,
         password
     } = req.body
     if(!firstName || !lastName || !email || !password){
@@ -461,10 +460,7 @@ router.post('/signup-admin', (req, res) => {
                         firstName,
                         lastName,
                         email,
-                        pic,
-                        password: hashedPassword,
-                        emailToken: crypto.randomBytes(64).toString('hex'),
-                        isVerified: false
+                        password: hashedPassword
                     })
                     admin.save()
                         .then(admin => {
@@ -586,15 +582,13 @@ router.post('/web/signin-admin', (req, res) => {
                             _id, 
                             firstName,
                             lastName,
-                            email,
-                            pic
+                            email
                         } = savedStudent
                         return res.json({token, student:{
                             _id, 
                             firstName,
                             lastName,
-                            email,
-                            pic
+                            email
                         }})
                     }
                     else{
