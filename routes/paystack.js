@@ -28,11 +28,11 @@ router.post('/verify/payment/monthly/:reference', (req,res) => {
             return res.status(422).json({error})
         }
 
-        // if (response.status === false) {
-        //     return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
-        // }
-
         response = JSON.parse(body)
+        
+        if (response.status === false) {
+             return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
+        }
 
         const email = response.data.customer.email
 
@@ -75,12 +75,12 @@ router.post('/verify/payment/quarterly/:reference', (req,res) => {
             console.log(error)
             return res.status(422).json({error})
         }
+        
+        response = JSON.parse(body)
 
         if (response.status === false) {
             return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
         }
-
-        response = JSON.parse(body)
 
         const email = response.data.customer.email
 
@@ -123,12 +123,12 @@ router.post('/verify/payment/biannually/:reference', (req,res) => {
             console.log(error)
             return res.status(422).json({error})
         }
+        
+        response = JSON.parse(body)
 
         if (response.status === false) {
             return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
         }
-
-        response = JSON.parse(body)
 
         const email = response.data.customer.email
 
