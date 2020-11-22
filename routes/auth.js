@@ -460,7 +460,8 @@ router.post('/signup-admin', (req, res) => {
                         firstName,
                         lastName,
                         email,
-                        password: hashedPassword
+                        password: hashedPassword,
+                        authenticated: "true"
                     })
                     admin.save()
                         .then(admin => {
@@ -523,13 +524,15 @@ router.post('/web/signin-admin', (req, res) => {
                             _id, 
                             firstName,
                             lastName,
-                            email
+                            email,
+                            authenticated
                         } = savedAdmin
                         return res.json({token, admin:{
                             _id, 
                             firstName,
                             lastName,
-                            email
+                            email,
+                            authenticated
                         }})
                     }
                     else{

@@ -17,12 +17,15 @@ const adminSchema = new mongoose.Schema({
         type: String,
     },
     expireToken:{
-        type: Date,
+        type: Date
+    },
+    authenticated:{
+        type: String
     },
     password:{
         type: String,
         required: true
-    }
+    },
 })
 
 mongoose.model("Admin", adminSchema)
