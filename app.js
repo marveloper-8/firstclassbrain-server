@@ -29,6 +29,7 @@ require('./models/instructor')
 require('./models/admin')
 require('./models/courses')
 require('./models/tests')
+require('./models/test_score')
 
 app.use(cors())
 app.use(express.json())
@@ -36,6 +37,7 @@ app.use(require('./routes/auth'))
 app.use(require('./routes/courses'))
 app.use(require('./routes/tests'))
 app.use(require('./routes/paystack'))
+app.use(require('./routes/test_score'))
 
 
 if(process.env.NODE_ENV=="production"){
