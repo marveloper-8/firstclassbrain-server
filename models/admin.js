@@ -13,13 +13,19 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    resetToken:{
+        type: String,
+    },
+    expireToken:{
+        type: Date
+    },
     authenticated:{
         type: String
     },
     password:{
         type: String,
         required: true
-    }
+    },
 })
 
 mongoose.model("Admin", adminSchema)
