@@ -583,13 +583,15 @@ router.post('/web/signin-admin', (req, res) => {
                             _id, 
                             firstName,
                             lastName,
-                            email
+                            email,
+                            authenticated
                         } = savedAdmin
                         return res.json({token, admin:{
                             _id, 
                             firstName,
                             lastName,
-                            email
+                            email,
+                            authenticated
                         }})
                     }
                     else{
