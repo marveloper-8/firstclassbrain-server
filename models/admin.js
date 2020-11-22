@@ -13,7 +13,7 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    isVerified:{
+    authenticated:{
         type: String
     },
     password:{
