@@ -13,6 +13,9 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    isVerified:{
+        type: String
+    },
     password:{
         type: String,
         required: true
