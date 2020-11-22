@@ -13,6 +13,12 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    resetToken:{
+        type: String,
+    },
+    expireToken:{
+        type: Date,
+    },
     password:{
         type: String,
         required: true
