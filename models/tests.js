@@ -31,6 +31,9 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     questions: [{
+        id: {
+            type: Number
+        },
         question: {
             type: String,
             required: true
