@@ -19,16 +19,18 @@ const testSchema = new mongoose.Schema({
         requred: true
     },
     week: {
+        type: Number
+    },
+    hours: {
         type: Number,
         requred: true
     },
-    time: {
+    minutes: {
         type: Number,
         requred: true
     },
     topic: {
-        type: String,
-        required: true
+        type: String
     },
     questions: [{
         id: {
