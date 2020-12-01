@@ -21,7 +21,13 @@ const instructorSchema = new mongoose.Schema({
         type: String
     },
     isVerified:{
-        type: Boolean
+        type: String
+    },
+    resetToken:{
+        type: String,
+    },
+    expireToken:{
+        type: Date,
     },
     password:{
         type: String,

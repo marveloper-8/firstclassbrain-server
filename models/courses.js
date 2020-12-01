@@ -30,8 +30,7 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     video: {
-        type: String,
-        required: true
+        type: String
     },
     courseThumbnail: {
         type: String,

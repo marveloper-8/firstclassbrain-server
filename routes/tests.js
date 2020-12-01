@@ -8,17 +8,33 @@ const Test = mongoose.model("Test")
 
 
 router.post('/upload-test', (req, res) => {
-
-    const { type,classSelected,subject,term,week,topic,time,questions } = req.body
-    
-    if(!type || !classSelected || !subject || !term || !week || !topic || !questions){
+    const { 
+        type,
+        classSelected,
+        subject,
+        term,
+        week,
+        topic,
+        hours,
+        minutes,
+        questions,
+    } = req.body
+    if(!type || !classSelected || !subject || !term || !week || !hours || !minutes || !topic || !questions){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
-    const test = new Test({ type,classSelected,subject,term,week,topic,time,questions })
-
-    test.save()
-    .then(result => {
+    const test = new Test({
+        type,
+        classSelected,
+        subject,
+        term,
+        week,
+        hours,
+        minutes,
+        topic,
+        questions
+    })
+    test.save().then(result => {
         return res.json({test: result})
     })
     .catch(err => { console.log(err) })
@@ -51,6 +67,41 @@ router.get('/test-details/:testId', (req, res) => {
         return res.status(404).json({error: "Property not found"})
     })
 })
+
+router.get('/student/test-details/:testId', (req, res) => {
+    Test.findOne({topic: req.params.testId})
+    .then(test => {
+        Test.find({testId: req.params.testId})
+        .populate("postedBy", "topic topic")
+        .exec((err, tests) => {
+            if(err){
+                return res.status(422).json({error: err})
+            }
+            res.json({test, tests})
+        })
+    }).catch(err => {
+        return res.status(404).json({error: "Property not found"})
+    })
+})
+
+router.get('/test-details/questions/:testId', (req, res) => {
+    Test.findOne({_id: req.params.testId})
+        .then(test => {
+            Test.find({testId: req.params.testId})
+            .populate("postedBy", "questions topic")
+            .exec((err, tests) => {
+                if(err){
+                    return res.status(422).json({error: err})
+                }
+                res.json({test, tests})
+            })
+        })
+        .catch(err => {
+            return res.status(404).json({error: "Questions not found"})
+        })
+})
+
+
 
 router.delete('/delete-test/:testId', (req, res) => {
     Test.findOne({_id: req.params.testId})

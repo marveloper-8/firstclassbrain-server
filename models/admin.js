@@ -5,24 +5,27 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    lastName:{
+        type: String,
+        required: true
+    },
     email:{
         type: String,
         required: true
     },
-    emailToken:{
+    resetToken:{
+        type: String,
+    },
+    expireToken:{
+        type: Date
+    },
+    authenticated:{
         type: String
-    },
-    isVerified:{
-        type: Boolean
-    },
-    pic:{
-     type:String,
-     default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
     },
     password:{
         type: String,
         required: true
-    }
+    },
 })
 
 mongoose.model("Admin", adminSchema)

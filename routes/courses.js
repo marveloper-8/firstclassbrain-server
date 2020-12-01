@@ -28,7 +28,7 @@ router.post('/upload-course', (req, res) => {
         fourthImageSlide
     } = req.body
 
-    if(!classSelected || !subject || !term || !week || !courseTitle || !video || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !firstImageSlide || !secondImageSlide){
+    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !firstImageSlide){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -71,6 +71,7 @@ router.get('/all-courses', (req, res) => {
             console.log(err)
         })
 })
+
 router.get('/course-details/:postId', (req, res) => {
     Post.findOne({_id: req.params.postId})
     .then(post => {

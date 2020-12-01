@@ -13,7 +13,206 @@ const Post = mongoose.model("Post")
 
 const {verifyPayment, charge_authorization} = require('../config/paystack')(request)
 
+// cron.schedule('* * * * * *', () => {
+//     console.log('Running Cron Job');
+// })
+
+
 router.post('/verify/payment/monthly/:reference', (req,res) => {
+
+    const {reference} = req.params
+
+    verifyPayment(reference, (error,body)=>{
+
+        if(error){
+            console.log(error)
+            return res.status(422).json({error})
+        }
+
+        response = JSON.parse(body)
+        
+        if (response.status === false) {
+             return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
+        }
+
+        const email = response.data.customer.email
+
+        // const { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code } = response.data.authorization
+        const { authorization_code } = response.data.authorization
+
+        Student.findOne({email})
+            .then(student=>{
+                if(!student){
+                    return res.status(422).json({error:"User not a student..."})
+                }
+
+                student.expiryDate = moment().add(29, 'days').calendar()
+                student.paid = 'true'
+                student.paymentReference = reference
+                student.bankAuth =  { authorization_code }
+                student.save().then((savedstudent)=>{
+                       res.json({message:"Paid succesfully...", savedstudent, response})
+                })
+
+                console.log(student)
+            })
+            .catch((err) => console.log(err))
+
+        // var mydate = new Date('2020-11-16T23:00:00.000Z')
+        // console.log(mydate.toDateString())
+    })
+
+})
+
+
+
+router.post('/verify/payment/quarterly/:reference', (req,res) => {
+
+    const {reference} = req.params
+
+    verifyPayment(reference, (error,body)=>{
+
+        if(error){
+            console.log(error)
+            return res.status(422).json({error})
+        }
+        
+        response = JSON.parse(body)
+
+        if (response.status === false) {
+            return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
+        }
+
+        const email = response.data.customer.email
+
+        // const { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code } = response.data.authorization
+        const { authorization_code } = response.data.authorization
+
+        Student.findOne({email})
+            .then(student=>{
+                if(!student){
+                    return res.status(422).json({error:"User not a student..."})
+                }
+
+                student.expiryDate = moment().add(89, 'days').calendar()
+                student.paid = 'true'
+                student.paymentReference = reference
+                student.bankAuth =  { authorization_code }
+                student.save().then((savedstudent)=>{
+                       res.json({message:"Paid succesfully...", savedstudent: savedstudent})
+                })
+
+                console.log(student)
+            })
+            .catch((err) => console.log(err))
+
+        // var mydate = new Date('2020-11-16T23:00:00.000Z')
+        // console.log(mydate.toDateString())
+    })
+
+})
+
+
+
+router.post('/verify/payment/biannually/:reference', (req,res) => {
+
+    const {reference} = req.params
+
+    verifyPayment(reference, (error,body)=>{
+
+        if(error){
+            console.log(error)
+            return res.status(422).json({error})
+        }
+        
+        response = JSON.parse(body)
+
+        if (response.status === false) {
+            return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
+        }
+
+        const email = response.data.customer.email
+
+        // const { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code } = response.data.authorization
+        const { authorization_code } = response.data.authorization
+
+        Student.findOne({email})
+            .then(student=>{
+                if(!student){
+                    return res.status(422).json({error:"User not a student..."})
+                }
+
+                student.expiryDate = moment().add(181, 'days').calendar()
+                student.paid = 'true'
+                student.paymentReference = reference
+                student.bankAuth =  { authorization_code }
+                student.save().then((savedstudent)=>{
+                       res.json({message:"Paid succesfully...", savedstudent: savedstudent})
+                })
+
+                console.log(student)
+            })
+            .catch((err) => console.log(err))
+
+        // var mydate = new Date('2020-11-16T23:00:00.000Z')
+        // console.log(mydate.toDateString())
+    })
+
+})
+
+
+
+router.post('/verify/payment/annually/:reference', (req,res) => {
+
+    const {reference} = req.params
+
+    verifyPayment(reference, (error,body)=>{
+
+        if(error){
+            console.log(error)
+            return res.status(422).json({error})
+        }
+
+        response = JSON.parse(body)
+
+        if (response.status === false) {
+            return res.status(422).json({error: "Bad request, check internet connectivity and try again..."})
+        }
+
+        const email = response.data.customer.email
+
+        // const { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code } = response.data.authorization
+        const { authorization_code } = response.data.authorization
+
+        Student.findOne({email})
+            .then(student=>{
+                if(!student){
+                    return res.status(422).json({error:"User not a student..."})
+                }
+
+                student.expiryDate = moment().add(364, 'days').calendar()
+                student.paid = 'true'
+                student.paymentReference = reference
+                student.bankAuth =  { authorization_code }
+                student.save().then((savedstudent)=>{
+                       res.json({message:"Paid succesfully...", savedstudent: savedstudent})
+                })
+
+                console.log(student)
+            })
+            .catch((err) => console.log(err))
+
+        // var mydate = new Date('2020-11-16T23:00:00.000Z')
+        // console.log(mydate.toDateString())
+    })
+
+})
+
+
+
+
+
+router.post('/verify/payment/:reference', (req,res) => {
 
     const {reference} = req.params
 
@@ -92,6 +291,10 @@ router.post('/verify/payment/quarterly/:reference', (req,res) => {
                 student.paid = 'true'
                 student.paymentReference = reference
                 student.bankAuth =  { authorization_code }
+                student.expiryDate = moment().add(7, 'days').calendar()
+                student.paid = "true"
+                student.paymentReference = payRef
+                student.bankAuth =  { authorization_code, card_type, last4, exp_month, exp_year, bin, bank, channel, signature, reusable, country_code }
                 student.save().then((savedstudent)=>{
                        res.json({message:"Paid succesfully...", savedstudent: savedstudent})
                 })
@@ -272,7 +475,7 @@ router.get('/studentcourse', requireStudentLogin, (req, res) => {
 
                     if(error){
                         //handle errors appropriately
-                        stud.paid = 'false'
+                        stud.paid = "false"
                         stud.save()
                         console.log(error)
                         return res.status(422).json({error, message: 'Subscription expired you need to pay again'})
@@ -281,13 +484,13 @@ router.get('/studentcourse', requireStudentLogin, (req, res) => {
                     response = JSON.parse(body)
 
                     if (response.status === false) {
-                        stud.paid = false
+                        stud.paid = "false"
                         stud.save()
                         return res.status(422).json({error: "Bad request. please, check internet connectivity and try again...", message: 'Subscription expired you need to pay again'})
                     }
 
                     stud.expiryDate = moment().add(7, 'days').calendar()
-                    stud.paid = 'true'
+                    stud.paid = "true"
                     stud.paymentReference = response.data.reference
                     stud.save()
 
