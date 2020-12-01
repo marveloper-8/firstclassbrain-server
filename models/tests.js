@@ -68,11 +68,11 @@ const testSchema = new mongoose.Schema({
             default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
         },
     }],
-    comments: [{
-        text:String,
-        postedBy:{
-            type: ObjectId,
-            ref: "Admin"
+    students:[{
+        score: { type: Number },
+        studentId: {
+            type:ObjectId,
+            ref:"Student"
         }
     }],
     postedBy: {
