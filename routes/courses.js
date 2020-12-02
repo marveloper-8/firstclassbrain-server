@@ -25,7 +25,8 @@ router.post('/upload-course', (req, res) => {
         firstImageSlide,
         secondImageSlide,
         thirdImageSlide,
-        fourthImageSlide
+        fourthImageSlide,
+        pdf
     } = req.body
 
     if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide){
@@ -49,6 +50,7 @@ router.post('/upload-course', (req, res) => {
         secondImageSlide,
         thirdImageSlide,
         fourthImageSlide,
+        pdf,
         postedBy: req.admin
     })
     post.save().then(result => {
