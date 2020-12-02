@@ -28,7 +28,7 @@ router.post('/upload-course', (req, res) => {
         fourthImageSlide
     } = req.body
 
-    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide){
+    if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
