@@ -26,7 +26,8 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     video: {
-        type: String
+        type: String,
+        default: "https://extras.firstclassbrain.com/pexels-videos-4552_49cII0mc.mp4"
     },
     courseThumbnail: {
         type: String,
