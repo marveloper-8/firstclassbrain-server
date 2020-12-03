@@ -132,7 +132,7 @@ router.put("/update-videoee/:postId", (req,res) => {
     )
 })
 
-router.put('/update-video/:postId',( req,res)=>{
+router.post('/update-video/:postId',( req,res)=>{
     const { video } = req.body
     Post.findByIdAndUpdate(req.params.postId,{$set:{video}},{new:true},
         (err, result)=>{
