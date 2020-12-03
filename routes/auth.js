@@ -47,8 +47,8 @@ var contactTransporter = nodemailer.createTransport({
     }
 })
 
-router.get('/verify-email/student', (req, res) => {
-    const {token} = req.query
+router.post('/verify-email/student', (req, res) => {
+    const {token} = req.body
 
     Student.findOne({ emailToken: token })
         .then( student => {
@@ -346,8 +346,8 @@ router.post('/signup-instructor', (req, res) => {
         })
 })
 
-router.get('/verify-email/instructor', (req, res) => {
-    const {token} = req.query
+router.post('/verify-email/instructor', (req, res) => {
+    const {token} = req.body
 
     Instructor.findOne({ emailToken: token })
         .then( instructor => {
