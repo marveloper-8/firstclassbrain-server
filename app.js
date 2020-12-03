@@ -9,6 +9,7 @@ const cors = require("cors")
 const {MONGOURI} = require('./config/keys')
 const swaggerDocument = require('./swagger.json')
 
+
 mongoose.connect(MONGOURI, {
     useNewUrlParser:true,
     useUnifiedTopology:true
@@ -33,6 +34,8 @@ require('./models/courses')
 require('./models/tests')
 require('./models/test_score')
 
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors())
 app.use(express.json())
 app.use(require('./routes/auth'))
