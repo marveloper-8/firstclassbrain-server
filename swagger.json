@@ -3,13 +3,13 @@
     "info": {
         "version": "1.0.0",
         "title": "Firstclass Brain API Documentation",
-        "description": "A minimal and easy to follow example of what you need to create a CRUD style API in NodeJs using TypeScript",
+        "description": "FirstClassBrain - Educational Learning Kit. by hendurhance. Portfolio. A mobile application for e-learning for students easy access to courses and class ...",
         "license": {
             "name": "MIT",
             "url": "https://opensource.org/licenses/MIT"
         }
     },
-    "host": "localhost:5000",
+    "host": "firstclassbrain-server.herokuapp.com",
     "basePath": "",
     "tags": [
         {
