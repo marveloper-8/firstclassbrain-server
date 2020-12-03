@@ -106,15 +106,17 @@ router.delete('/delete-post/:postId', (req, res) => {
     })
 })
 
-router.post("/update-video", (req,res) => {   
-    Post.findByIdAndUpdate(req.post._id, { video:  req.body.video },   
-    function(err) {  
-    if (err) {  
-        res.send(err);  
-        return;  
-    }  
-        res.send({data:"Record has been Updated..!!"});  
-    });  
+router.post("/update-video/:postId", (req,res) => {  
+    const {video} = req.body 
+    if(!video){
+        return res.status(422).json({error: "Please add all the fields"})
+    }
+    const post = new Post({video})
+    Post.findByIdAndUpdate({ _id:  req.body._id },
+        post.save().then(result => {
+            return res.json({post: result})
+        })
+    )
 })
 
 router.put('buy-course/:postId', (req, res) => {

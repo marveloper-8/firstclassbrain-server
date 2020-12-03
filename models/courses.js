@@ -3,27 +3,22 @@ const {ObjectId} = mongoose.Schema.Types
 
 const postSchema = new mongoose.Schema({
     classSelected: {
-        type: Number,
-        required: true
+        type: Number
     },
     subject: {
-        type: String,
-        required: true
+        type: String
     },
     department:{
         type: String
     },
     term: {
-        type: Number,
-        requred: true
+        type: Number
     },
     week: {
-        type: Number,
-        requred: true
+        type: Number
     },
     courseTitle: {
-        type: String,
-        required: true
+        type: String
     },
     video: {
         type: String,
@@ -34,32 +29,28 @@ const postSchema = new mongoose.Schema({
         default:"https://extras.firstclassbrain.com/online-course.png"
     },
     firstTextSlide: {
-        type: String,
-        required: true
+        type: String
     },
     firstImageSlide: {
         type: String,
         default:"https://extras.firstclassbrain.com/add-image.png"
     },
     secondTextSlide: {
-        type: String,
-        required: true
+        type: String
     },
     secondImageSlide: {
         type: String,
         default:"https://extras.firstclassbrain.com/add-image.png"
     },
     thirdTextSlide: {
-        type: String,
-        required: true
+        type: String
     },
     thirdImageSlide: {
         type: String,
         default:"https://extras.firstclassbrain.com/add-image.png"
     },
     fourthTextSlide: {
-        type: String,
-        required: true
+        type: String
     },
     fourthImageSlide: {
         type: String,
