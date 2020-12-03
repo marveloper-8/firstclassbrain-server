@@ -1,11 +1,13 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
+const swaggerUI = require('swagger-ui-express')
 const app = express()
 const cron = require('node-cron')
 const PORT = process.env.PORT || 5000
 const cors = require("cors")
 const {MONGOURI} = require('./config/keys')
+const swaggerDocument = require('./swagger.json')
 
 mongoose.connect(MONGOURI, {
     useNewUrlParser:true,
@@ -38,6 +40,7 @@ app.use(require('./routes/courses'))
 app.use(require('./routes/tests'))
 app.use(require('./routes/paystack'))
 app.use(require('./routes/test_score'))
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 
 if(process.env.NODE_ENV=="production"){
