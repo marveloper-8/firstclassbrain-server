@@ -21,20 +21,17 @@ const postSchema = new mongoose.Schema({
         type: Number,
         requred: true
     },
-    // dateUnlock: {
-    //     type: Date,
-    //     requred: true
-    // },
     courseTitle: {
         type: String,
         required: true
     },
     video: {
-        type: String
+        type: String,
+        default: "https://extras.firstclassbrain.com/pexels-videos-4552_49cII0mc.mp4"
     },
     courseThumbnail: {
         type: String,
-        default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
+        default:"https://extras.firstclassbrain.com/online-course.png"
     },
     firstTextSlide: {
         type: String,
@@ -42,7 +39,7 @@ const postSchema = new mongoose.Schema({
     },
     firstImageSlide: {
         type: String,
-        required: false
+        default:"https://extras.firstclassbrain.com/add-image.png"
     },
     secondTextSlide: {
         type: String,
@@ -50,7 +47,7 @@ const postSchema = new mongoose.Schema({
     },
     secondImageSlide: {
         type: String,
-        required: false
+        default:"https://extras.firstclassbrain.com/add-image.png"
     },
     thirdTextSlide: {
         type: String,
@@ -58,7 +55,7 @@ const postSchema = new mongoose.Schema({
     },
     thirdImageSlide: {
         type: String,
-        default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
+        default:"https://extras.firstclassbrain.com/add-image.png"
     },
     fourthTextSlide: {
         type: String,
@@ -66,11 +63,11 @@ const postSchema = new mongoose.Schema({
     },
     fourthImageSlide: {
         type: String,
-        default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
+        default:"https://extras.firstclassbrain.com/add-image.png"
     },
-    paid: {
-        type: Boolean,
-        default: false
+    pdf:{
+        type: String,
+        default: "Upload PDF"
     },
     likes: [
         {

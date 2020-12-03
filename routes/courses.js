@@ -25,10 +25,11 @@ router.post('/upload-course', (req, res) => {
         firstImageSlide,
         secondImageSlide,
         thirdImageSlide,
-        fourthImageSlide
+        fourthImageSlide,
+        pdf
     } = req.body
 
-    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !firstImageSlide){
+    if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -49,6 +50,7 @@ router.post('/upload-course', (req, res) => {
         secondImageSlide,
         thirdImageSlide,
         fourthImageSlide,
+        pdf,
         postedBy: req.admin
     })
     post.save().then(result => {
@@ -88,8 +90,6 @@ router.get('/course-details/:postId', (req, res) => {
     })
 })
 
-
-
 router.delete('/delete-post/:postId', (req, res) => {
     Post.findOne({_id: req.params.postId})
     .populate("postedBy", "_id")
@@ -106,6 +106,16 @@ router.delete('/delete-post/:postId', (req, res) => {
     })
 })
 
+router.post("/update-video", (req,res) => {   
+    Post.findByIdAndUpdate(req.post._id, { video:  req.body.video },   
+    function(err) {  
+    if (err) {  
+        res.send(err);  
+        return;  
+    }  
+        res.send({data:"Record has been Updated..!!"});  
+    });  
+})
 
 router.put('buy-course/:postId', (req, res) => {
     var updatedRecord = {
@@ -117,7 +127,6 @@ router.put('buy-course/:postId', (req, res) => {
         else console.log('Error while updating a record : ' + JSON.stringify(err, undefined, 2))
     })
 })
-
 router.post("/bought-course/:postId", (req,res) => {  
     
     Post.findByIdAndUpdate( req.params.postId, { $set: {paid: true} }, {useFindAndModify: false},
@@ -130,7 +139,6 @@ router.post("/bought-course/:postId", (req,res) => {
         res.send({data:"Record has been Updated..!!"});  
     });  
 })  
-
 router.post("/buy--course/:postId", (req,res) => {  
     let updatedRecord = {
         courseTitle: "Edited"
@@ -153,7 +161,6 @@ router.post("/buy--course/:postId", (req,res) => {
             
     });  
 })  
-
 router.put('/like',requireStudentLogin,(req,res)=>{
     Post.findByIdAndUpdate(req.body.postId,{
         $push:{likes:req.student._id}
@@ -180,7 +187,6 @@ router.put('/unlike',requireStudentLogin,(req,res)=>{
         }
     })
 })
-
 router.put('/comment',requireStudentLogin,(req,res)=>{
     const comment = {
         text:req.body.text,
@@ -202,17 +208,6 @@ router.put('/comment',requireStudentLogin,(req,res)=>{
     })
 })
 // end of posts
-
-
-
-
-
-
-
-
-
-
-
 router.get('/my-dashboard', requireStudentLogin, (req, res) => {
     Post.find({postedBy: req.student._id})
         .populate("postedBy", "_id name")
@@ -223,7 +218,6 @@ router.get('/my-dashboard', requireStudentLogin, (req, res) => {
             console.log(err)
         })
 })
-
 router.put('/like', requireStudentLogin, (req, res) => {
     Post.findByIdAndUpdate(req.body.postId, {
         $push: {likes: req.student._id}
@@ -239,7 +233,6 @@ router.put('/like', requireStudentLogin, (req, res) => {
         }
     })
 })
-
 router.put('/unlike', requireStudentLogin, (req, res) => {
     Post.findByIdAndUpdate(req.body.postId, {
         $pull: {likes: req.student._id}
