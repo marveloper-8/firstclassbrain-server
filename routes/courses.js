@@ -118,6 +118,17 @@ router.post('/update-video/:postId',( req,res)=>{
     })
 })
 
+router.post('/update-pdf/:postId',( req,res)=>{
+    const { pdf } = req.body
+    Post.findByIdAndUpdate(req.params.postId,{$set:{pdf}},{new:true},
+        (err, result)=>{
+            if(err){
+                return res.status(422).json({error:"PDF cannot post"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
 router.post('/update-first-image/:postId',( req,res)=>{
     const { firstImageSlide } = req.body
     Post.findByIdAndUpdate(req.params.postId,{$set:{firstImageSlide}},{new:true},
