@@ -58,7 +58,7 @@ const postSchema = new mongoose.Schema({
     },
     pdf:{
         type: String,
-        default: "Upload PDF"
+        default:"https://extras.firstclassbrain.com/abc_packet.pdf"
     },
     likes: [
         {
