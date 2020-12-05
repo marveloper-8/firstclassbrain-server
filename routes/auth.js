@@ -293,8 +293,8 @@ router.post('/signup-instructor', (req, res) => {
 
                             let mailOptions =  {
                                 to:instructor.email,
-                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
-                                subject:"Confirm Your Email Address",
+                                from:'"Firstclassbrain" <noreply@firstclassbrain.com>',
+                                subject:"Welcome to FirstclassBrain",
                                 html: `
                                 <!DOCTYPE html>
                                 <html lang="en"
