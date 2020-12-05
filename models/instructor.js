@@ -17,17 +17,9 @@ const instructorSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    emailToken:{
-        type: String
-    },
-    isVerified:{
-        type: String
-    },
-    resetToken:{
+    originalPassword: {
         type: String,
-    },
-    expireToken:{
-        type: Date,
+        required: true
     },
     password:{
         type: String,
