@@ -269,7 +269,7 @@ router.post('/signup-instructor', (req, res) => {
         originalPassword,
         password
     } = req.body
-    if(!firstName || !lastName || !phone || !email || !password){
+    if(!firstName || !lastName || !phone || !email || !password || !originalPassword){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Instructor.findOne({email: email})

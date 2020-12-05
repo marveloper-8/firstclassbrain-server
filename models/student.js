@@ -53,7 +53,7 @@ const studentSchema = new mongoose.Schema({
     },
     pic:{
      type:String,
-     default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
+     default:"https://extras.firstclassbrain.com/student-dp.png"
     },
     bankAuth: {
         authorization_code: { type: String },
