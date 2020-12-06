@@ -17,9 +17,11 @@ router.post('/upload-test', (req, res) => {
         topic,
         hours,
         minutes,
+        postedByWho,
+        postedByWhoLink,
         questions,
     } = req.body
-    if(!type || !classSelected || !subject || !term || !week || !hours || !minutes || !topic || !questions){
+    if(!type || !classSelected || !subject || !term || !week || !hours || !minutes || !topic || !questions || !postedByWho || !postedByWhoLink){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -32,6 +34,8 @@ router.post('/upload-test', (req, res) => {
         hours,
         minutes,
         topic,
+        postedByWho,
+        postedByWhoLink,
         questions
     })
     test.save().then(result => {
@@ -42,6 +46,17 @@ router.post('/upload-test', (req, res) => {
 })
 
 router.get('/all-tests', (req, res) => {
+    Test.find()
+        .then(tests => {
+            return res.json({tests})
+        })
+        .catch(err => {
+                res.json({tests})
+                console.log(err)
+        })
+})
+
+router.get('/admin/all-tests', (req, res) => {
     Test.find()
         .then(tests => {
             return res.json({tests})

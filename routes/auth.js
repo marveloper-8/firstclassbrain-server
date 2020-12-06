@@ -1689,7 +1689,7 @@ router.post('/admin/reset-password',(req,res)=>{
                             </tbody></table>
                             
                             <div class="mobileContent" style="display: none; mso-hide: all;">
-                            <img src="https://extras.firstclassbrain.com/dashboard.jpg" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 100%; outline: none; text-decoration: none; width: 100%; border-top:20px teal solid; border-bottom:20px teal solid; margin-bottom:20px;" border="0" alt="">
+                            <img src="https://extras.firstclassbrain.com/password.jpg" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 100%; outline: none; text-decoration: none; width: 100%; border-top:20px teal solid; border-bottom:20px teal solid; margin-bottom:20px;" border="0" alt="">
                             </div>
                             
                             

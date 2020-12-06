@@ -27,10 +27,12 @@ router.post('/upload-course', (req, res) => {
         secondImageSlide,
         thirdImageSlide,
         fourthImageSlide,
+        postedByWho,
+        postedByWhoLink,
         pdf
     } = req.body
 
-    if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide){
+    if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !postedByWho || !postedByWhoLink){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -51,6 +53,8 @@ router.post('/upload-course', (req, res) => {
         secondImageSlide,
         thirdImageSlide,
         fourthImageSlide,
+        postedByWho,
+        postedByWhoLink,
         pdf,
         postedBy: req.admin
     })
