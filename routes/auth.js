@@ -1243,7 +1243,7 @@ router.post('/admin/reset-password',(req,res)=>{
                     to:admin.email,
                     from:'"Firstclassbrain" <password@firstclassbrain.com>',
                     subject:"Reset Password",
-                    text:   `
+                    html:   `
                     <!DOCTYPE html>
                     <html lang="en"
                         xmlns="http://www.w3.org/1999/xhtml" 
