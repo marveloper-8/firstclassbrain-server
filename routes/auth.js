@@ -1563,4 +1563,54 @@ router.put('/admin/coupon', requireAdminLogin, (req,res) => {
 })
 
 
+// delete instructors and students
+router.get('/student-details/:postId', (req, res) => {
+    Student.findOne({_id: req.params.postId})
+    .then(student => {
+        Student.find({postId: req.params.postId})
+        .populate("postedBy", "_id firstName")
+        .exec((err, students) => {
+            if(err){
+                return res.status(422).json({error: err})
+            }
+            res.json({student, students})
+        })
+    }).catch(err => {
+        return res.status(404).json({error: "Student not found"})
+    })
+})
+
+router.delete('/delete-student/:postId', (req, res) => {
+    Student.findOne({_id: req.params.postId})
+    .populate("postedBy", "_id")
+    .exec((err, student) => {
+        if(err || !student){
+            return res.status(422).json({error: err})
+        }
+        student.remove()
+        .then(result => {
+            res.json({message: "successfully deleted"})
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+})
+
+router.delete('/delete-instructor/:postId', (req, res) => {
+    Instructor.findOne({_id: req.params.postId})
+    .populate("postedBy", "_id")
+    .exec((err, instructor) => {
+        if(err || !instructor){
+            return res.status(422).json({error: err})
+        }
+        instructor.remove()
+        .then(result => {
+            res.json({message: "successfully deleted"})
+        }).catch(err => {
+            console.log(err)
+        })
+    })
+})
+
+
 module.exports = router
