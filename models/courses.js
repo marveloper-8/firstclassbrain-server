@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema.Types
 
 const postSchema = new mongoose.Schema({
+    postedByWho: {
+        type: String,
+        required: true
+    },
+    postedByWhoLink: {
+        type: String,
+        required: true
+    },
     classSelected: {
         type: Number
     },

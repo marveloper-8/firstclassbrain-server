@@ -2,6 +2,14 @@ const mongoose = require('mongoose')
 const {ObjectId} = mongoose.Schema.Types
 
 const testSchema = new mongoose.Schema({
+    postedByWho: {
+        type: String,
+        required: true
+    },
+    postedByWhoLink: {
+        type: String,
+        required: true
+    },
     type: {
         type: Number,
         required: true
@@ -23,7 +31,7 @@ const testSchema = new mongoose.Schema({
     },
     hours: {
         type: Number,
-        requred: true
+        default: 0
     },
     minutes: {
         type: Number,
