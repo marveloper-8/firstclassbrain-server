@@ -45,6 +45,10 @@ const studentSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    originalPassword:{
+        type: String,
+        required: true
+    },
     resetToken:{
         type: String,
     },

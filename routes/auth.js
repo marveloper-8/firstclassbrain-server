@@ -34,7 +34,7 @@ var passwordTransporter = nodemailer.createTransport({
     }
 })
 
-var contactTransporter = nodemailer.createTransport({
+var transporter = nodemailer.createTransport({
     host: 'firstclassbrain.com',
     port: 465,
     secure: true,
@@ -46,6 +46,95 @@ var contactTransporter = nodemailer.createTransport({
         rejectUnauthorized: false
     }
 })
+
+transporter.verify(function(error, success) {
+  if (error) {
+    console.log(error);
+  } else {
+    console.log("Server is ready to take our messages");
+  }
+})
+
+router.post('/contact-form', (req, res) => {
+  const { 
+      first_name, 
+      last_name, 
+      email, 
+      phone,
+      message
+    } = req.body
+
+  const sendMail = async () => {
+    try{
+      
+      let mailOptions = {
+        from: `"Contact Form Message" <contact@firstclassbrain.com>`,
+        to: `g.joshua.e@gmail.com`,
+        subject: `${first_name} has a message for you`,
+        text: `Message from ${first_name}`,
+        html: `
+            <p>My name is <strong>${first_name} ${last_name}</strong> and I just want to say <strong>${message}</strong></p>
+
+            <p>Send me an email at ${email} or call me on ${phone}</p>
+        `
+      }
+
+      transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+          res.json(error)
+          console.log(error)
+        }
+        console.log('Email sent: ' + info.response)
+      })
+
+    }catch(err){
+      res.json(err)
+      console.log(err)
+    }
+  }
+
+  sendMail()
+
+})
+
+router.post('/contact', (req,res) => {
+    const { first_name, last_name, phone_number, email, message } = req.body
+    if( !first_name || !last_name || !phone_number || !email || !message ){
+        return res.status(422).json({error: "Please add all the fields"})
+    }
+
+    const name = `${first_name.charAt(0).toUpperCase() + first_name.slice(1)} ${last_name.charAt(0).toUpperCase() + last_name.slice(1)}`
+
+    let mailOptions =  {
+        to: 'wisdomanaba83@gmail.com',
+        from: email,
+        subject:`Contact Form: Message from ${name}`,
+        text: `Name: ${name}
+        Email: ${email}
+        Phone no: ${phone_number}
+        Message: ${message}
+        `
+    }
+
+    contactTransporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error)
+            return res.status(422).json({error})
+        } else {
+            contact.save()
+                .then(message => {
+                    console.log('Email sent: ' + info.response)
+                    res.json({message: "Messaeg sent successfully", data: message})
+                })
+                .catch(err => {
+                    res.json({err})
+                    console.log(err)
+                })
+        }
+    })
+    
+})
+
 
 router.post('/verify-email/student', (req, res) => {
     const {token} = req.body
@@ -78,9 +167,10 @@ router.post('/signup-student', (req, res) => {
         address,
         classSelected,
         pic,
+        originalPassword,
         password
     } = req.body
-    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
+    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password || !originalPassword){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Student.findOne({email: email})
@@ -98,6 +188,7 @@ router.post('/signup-student', (req, res) => {
                         address,
                         classSelected,
                         pic,
+                        originalPassword,
                         password: hashedPassword,
                         emailToken: crypto.randomBytes(64).toString('hex'),
                         isVerified: "false"
@@ -110,203 +201,17 @@ router.post('/signup-student', (req, res) => {
                                 to:student.email,
                                 subject:"Confirm Your Email Address",
                                 html: `
-                                <html>
-                                    <head>
-                                        <meta charset="utf-8">
-                                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                                        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
-                                    </head>
-                                    <body style="background: #f5f5f0; padding: 2em; font-family: 'Montserrat', sans-serif; margin: 0;">
-                                        <div style="background: #fff; border-radius: 15px;">
-                                            <div style="background: #008080; height:2.5em; border-radius: 15px 15px 0px 0px;"></div>
-                                            <div style="display: flex; align-items: center; padding: 2em 2em 0em 2em;">
-                                                <img src="https://firstclassbrain.com/static/media/logo.08b1aa39.jpeg" width="50px" alt="Logo">
-                                                <span style="font-size: 18px; font-weight: 600; text-transform: uppercase; padding-left: 10px;">First Class Brain</span>
-                                            </div>
-                                            <div style="padding: 2em 2em; border-radius: 10px;">
-                                                <p>Hi ${student.firstName}</p>
-                                                <p>Thanks for registering on our site. <br /> Please confirm your email address, by clicking on the link below!</p>
-                                                <a href="https://firstclassbrain.com/verify-email/student?token=${student.emailToken}">Confirm email...</a>
-                                            </div>
-                                            <div style="background: #008080; height:2.5em; border-radius: 0px 0px 15px 15px;"></div>
-                                        </div>
-                                        <footer style="text-align: center; font-size: 9px; padding: 1em 0em 3em 0em;">
-                                            <p>&copy; 2020, All rights reserved</p>
-                                            <p>No. 27, Olayiwola Street, New Oko-oba, Lagos State</p>
-                                        </footer>
-                                    </body> 
-                                </html>
-                                `
-                            }
-            
-                            passwordTransporter.sendMail(mailOptions, (error, info) => {
-                                if (error) {
-                                    console.log(error)
-                                    return res.status(422).json({error})
-                                } else {
-                                    console.log('Email sent: ' + info.response)
-                                    res.json({message:"Thanks for registering, please check your email to verify your account..."})
-                                }
-                            })
-
-                        })
-                        .catch(err => {
-                            console.log(err)
-                        })
-
-                })
-        })
-        .catch(err => {
-            console.log(err)
-        })
-})
-
-router.post('/signin-student', (req, res) => {
-    const {email, password} = req.body
-    if(!email || !password){
-        return res.status(422).json({error: "Please add email or password"})
-    }
-    Student.findOne({email:email})
-        .then(savedStudent => {
-            if(!savedStudent){
-                return res.status(422).json({error: "Invalid email or password"})
-            }
-            bcrypt.compare(password, savedStudent.password)
-                .then(doMatch => {
-                    if(doMatch){
-                        // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
-                        return res.json({token})
-                    }
-                    else{
-                        return res.status(422).json({error: "Invalid email or password"})
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        })
-})
-
-
-router.post('/web/signin-student', (req, res) => {
-    const {email, password} = req.body
-    if(!email || !password){
-        return res.status(422).json({error: "Please add email or password"})
-    }
-    Student.findOne({email:email})
-        .then(savedStudent => {
-            if(!savedStudent){
-                return res.status(422).json({error: "Invalid email or password"})
-            }
-            bcrypt.compare(password, savedStudent.password)
-                .then(doMatch => {
-                    if(doMatch){
-                        // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
-                        const {
-                            _id, 
-                            firstName,
-                            lastName,
-                            middleName,
-                            email,
-                            phone,
-                            address,
-                            school,
-                            classSelected,
-                            paid,
-                            isVerified,
-                            pic
-                        } = savedStudent
-                        return res.json({token, student:{
-                            _id, 
-                            firstName,
-                            lastName,
-                            middleName,
-                            email,
-                            phone,
-                            address,
-                            school,
-                            classSelected,
-                            paid,
-                            isVerified,
-                            pic
-                        }})
-                    }
-                    else{
-                        return res.status(422).json({error: "Invalid email or password"})
-                    }
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        })
-})
-
-
-// list of students
-router.get('/all-student', (req, res) => {
-    Student.find()
-        // .populate("postedBy", "_id fullName")
-        .then(student => {
-            res.json({student})
-        })
-        .catch(err => {
-            console.log(err)
-        })
-})
-
-// end of list of students
-
-
-router.post('/signup-instructor', (req, res) => {
-    const {
-        firstName,
-        lastName,
-        phone,
-        email,
-        pic,
-        originalPassword,
-        password
-    } = req.body
-    if(!firstName || !lastName || !phone || !email || !password || !originalPassword){
-        return res.status(422).json({error: "Please add all the fields"})
-    }
-    Instructor.findOne({email: email})
-        .then((savedInstructor) => {
-            if(savedInstructor){
-                return res.status(422).json({error: "Instructor already exists with that email"})
-            }
-            bcrypt.hash(password, 12)
-                .then(hashedPassword => {
-                    const instructor = new Instructor({
-                        firstName,
-                        lastName,
-                        phone,
-                        email,
-                        pic,
-                        originalPassword,
-                        password: hashedPassword
-                    })
-                    instructor.save()
-                        .then(instructor => {
-
-                            let mailOptions =  {
-                                to:instructor.email,
-                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
-                                subject:"Welcome to FirstclassBrain",
-                                html: `
                                 <!DOCTYPE html>
                                 <html lang="en"
-                                    xmlns="http://www.w3.org/1999/xhtml" 
-                                    xmlns:v="urn:schemas-microsoft-com:vml" 
-                                    xmlns:o="urn:schemas-microsoft-com:office:office"
+                                xmlns="http://www.w3.org/1999/xhtml" 
+                                xmlns:v="urn:schemas-microsoft-com:vml" 
+                                xmlns:o="urn:schemas-microsoft-com:office:office"
                                 >
-                                    <head>
+                                <head>
                                         <meta charset="UTF-8">
                                         <meta name="viewport" content="width=device-width, initial-scale=1.0">
                                         <title>Document</title>
-                                
+
                                         <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
                                         <!--[if !mso]><!-- -->
                                         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -317,67 +222,67 @@ router.post('/signup-instructor', (req, res) => {
                                         <o:PixelsPerInch>96</o:PixelsPerInch>
                                         </o:OfficeDocumentSettings>
                                         </xml><![endif]-->
-                                
-                                
+
+
                                         <style>
                                             h1,.h1{
-                                                font-size: 60px !important;
-                                                line-height: 66px !important;
+                                            font-size: 60px !important;
+                                            line-height: 66px !important;
                                             }
                                             h2,.h2{
-                                                font-size: 44px !important;
-                                                line-height: 50px !important;
+                                            font-size: 44px !important;
+                                            line-height: 50px !important;
                                             }
                                             .btn a:hover{
-                                                background-color:#000000!important;
-                                                border-color:#000000!important;
+                                            background-color:#000000!important;
+                                            border-color:#000000!important;
                                             }
                                             .textcta a:hover{
-                                                color:#000000!important;
+                                            color:#000000!important;
                                             }
                                             p {margin: 0 !important;}
                                             .divbox:hover, * [lang~="x-divbox"]:hover {
-                                                background-color: #000000 !important;
+                                            background-color: #000000 !important;
                                             }
                                             .boxfont:hover, * [lang~="x-boxfont"]:hover {
-                                                color: #ffffff !important;
+                                            color: #ffffff !important;
                                             }
-                                
+
                                             .mobileContent{display: none;}
-                                
+
                                             @media (max-width: 414px) {
-                                                .mobileContent{display: block !important}
-                                                .desktopContent{display: none !important}
-                                                .mob2_m_pad{padding-bottom: 15px !important}
-                                
-                                                .hide {display: none !important;}
-                                                .show {display: inline-block !important; width:auto !important; height:auto !important; overflow:visible !important; float:none !important; visibility:visible !important; border:none !important; padding-bottom:0px !important; vertical-align: bottom !important;}
-                                                .show1 {
+                                            .mobileContent{display: block !important}
+                                            .desktopContent{display: none !important}
+                                            .mob2_m_pad{padding-bottom: 15px !important}
+
+                                            .hide {display: none !important;}
+                                            .show {display: inline-block !important; width:auto !important; height:auto !important; overflow:visible !important; float:none !important; visibility:visible !important; border:none !important; padding-bottom:0px !important; vertical-align: bottom !important;}
+                                            .show1 {
                                                     display: block !important;
                                                     max-height: none !important;
-                                                }
-                                                h1, h2, .h1, .h2{
+                                            }
+                                            h1, h2, .h1, .h2{
                                                     font-size: 34px !important;
                                                     line-height: 40px !important;
-                                                }
-                                                .mobfb414, .mobfb414 td{
+                                            }
+                                            .mobfb414, .mobfb414 td{
                                                     padding-left:0 !important;
                                                     padding-right:0 !important;
                                                     max-width:414px !important;
-                                                }
-                                                .mobmw414{
+                                            }
+                                            .mobmw414{
                                                     max-width:414px !important;
-                                                }
+                                            }
                                             }
                                         </style>
-                                
+
                                         <style type="text/css"> 
-                                          @media screen and (max-width:699px){.full,.t10of12,.t11of12,.t12of12,.t1of12,.t2of12,.t3of12,.t4of12,.t5of12,.t6of12,.t7of12,.t8of12,.t9of12{width:100%!important;max-width:none!important}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}.headerTextLeft{text-align:left!important}.hide{display:none!important}.mp0{padding:0!important}}@font-face{font-family:UberMove-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Light;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Regular;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Bold;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}
+                                        @media screen and (max-width:699px){.full,.t10of12,.t11of12,.t12of12,.t1of12,.t2of12,.t3of12,.t4of12,.t5of12,.t6of12,.t7of12,.t8of12,.t9of12{width:100%!important;max-width:none!important}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}.headerTextLeft{text-align:left!important}.hide{display:none!important}.mp0{padding:0!important}}@font-face{font-family:UberMove-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Light;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Regular;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Bold;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}
                                         </style>
-                                    </head>
-                                    <body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%">
+                                </head>
+                                <body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%">
                                         <span data-blockuuid="ab2f7a3a-54b3-4956-8fcc-02b837adf583" style="display: none; max-height: 0px; font-size: 0px; overflow: hidden; mso-hide: all;">
-                                          Get familiar with useful features like Spotlight and Share My Trip.
+                                        Get familiar with useful features like Spotlight and Share My Trip.
                                         </span>
                                         
                                         <style>.yahooHide{display:none!important}</style>
@@ -394,154 +299,77 @@ router.post('/signup-instructor', (req, res) => {
                                         <tbody>
                                         <tr>
                                         <td style="background-color:#ffffff">
-                                        <!-- Logo  mt_2019/10/23  -->
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="bb61e9fc-ef96-4b2d-8311-5e8804baa199">
-                                           <tbody><tr>
-                                              <td width="14" style="background-color:#000000;">&nbsp;</td>
-                                                <td class="outsidegutter mobile_b_pad" align="left" style="direction:ltr;text-align:left;background-color: #000000; padding-bottom: 22px; padding-top: 12px;">
-                                                 <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
-                                                    <tbody><tr>
-                                                       <td align="center">
-                                        
-                                        
-                                        
-                                        <!--[if (gte mso 9)|(IE)]>
-                                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="10of12" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                                    <tbody><tr>
-                                                       <td width="12">&nbsp;</td>
-                                                       <td style="direction:ltr;text-align:left;">
-                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                                <tbody></tbody>
-                                                            </table>
-                                                       </td>
-                                                       <td width="12">&nbsp;</td>
-                                                    </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
-                                        </table>
-                                        <![endif]-->
-                                        
-                                                       </td>
-                                                    </tr>
-                                                 </tbody></table>
-                                              </td>
-                                              <td width="14" style="background-color:#000000;">&nbsp;</td>
-                                           </tr>
-                                        </tbody></table>
-                                        <!-- close logo -->
-                                        
-                                        
                                         
                                         <!-- mod1  mt_2019/10/23  -->
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="bb61e9fc-ef96-4b2d-8311-5e8804baa199">
-                                           <tbody><tr>
-                                              <td class="" align="left" style="direction:ltr;text-align:left;">
+                                            <tbody><tr>
+                                            <td class="" align="left" style="direction:ltr;text-align:left;">
                                         <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
                                                     <tbody><tr>
-                                                      <td class="mob_bg" valign="top" background="https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif" bgcolor="#000000" style="background-image:url('https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif');background-color: #000000; background-size: contain; background-position: bottom right; background-repeat: no-repeat;" align="center" height="180">
-                                                <!--[if gte mso 9]>
+                                                    <td class="mob_bg" valign="top" background="https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif" bgcolor="#000000" style="background-image:url('https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif');background-color: #000000; background-size: contain; background-position: bottom right; background-repeat: no-repeat;" align="center" height="180">
+                                            <!--[if gte mso 9]>
                                                         <v:image xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style=" border: 0;display: inline-block; width: 700px; height: 240px;" src="https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif" />
                                                         <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style=" border: 0;display: inline-block;position: absolute; width: 700px; height: 260px;">
-                                                          <v:fill  opacity="0%" color="#000000"  />
-                                                          <v:textbox inset="0,0,0,0">
-                                                            <![endif]-->
+                                                        <v:fill  opacity="0%" color="#000000"  />
+                                                        <v:textbox inset="0,0,0,0">
+                                                        <![endif]-->
                                                         <div>
                                         
                                         
                                         
                                         <!-- content  mt_2019/10/23  -->
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                           <tbody><tr>
+                                            <tbody><tr>
                                         
                                             <td width="14">&nbsp;</td>
                                         
                                             <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;">
-                                                 <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                                <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
                                                     <tbody><tr>
-                                                      <td align="center">
+                                                    <td align="center">
                                         
                                         <!--[if (gte mso 9)|(IE)]>
                                         <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t10of12" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                            <tr>
+                                            <td>
+                                                <![endif]-->
+                                                <table border="0" cellpadding="0" cellspacing="0" class="t10of12" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
                                                     <tbody><tr>
-                                                       <td width="12">&nbsp;</td>
-                                                       <td style="direction:ltr;text-align:left;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
+                                                        <td width="12">&nbsp;</td>
+                                                        <td style="direction:ltr;text-align:left;">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                            <tbody><tr>
                                                                 <td style="direction:ltr;text-align:left;">
                                         
                                         
-                                        <!--[if (gte mso 9)|(IE)]>
-                                        <table width="347" align="left" cellpadding="0" cellspacing="0" border="0">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t6of12 layout" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 347px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                                    <tbody><tr>
-                                                       <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-bottom: 0px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 25px;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
-                                                               <td class="h2 white" style="direction:ltr;text-align:left;color: #ffffff; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 34px; line-height: 40px; padding-bottom: 0px; padding-top: 7px;">Congratulations!</td>
-                                                            </tr>
-                                                          </tbody></table>
-                                                       </td>
-                                                    </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
-                                        </table>
-                                        <![endif]-->
-                                        
                                                                 </td>
-                                                             </tr>
+                                                            </tr>
                                         
-                                                             <tr>
-                                                              <td valign="top" style="direction:ltr;text-align:left;">
+                                                            <tr>
+                                                            <td valign="top" style="direction:ltr;text-align:left;">
                                         
+                                                            </td>
+                                                            </tr>
                                         
-                                        <!-- content  mt_2019/10/23  -->
-                                        <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                           <tbody><tr>
-                                              <td class="h5 mp1 white" align="left" width="65%" valign="top" style="direction:ltr;text-align:left;color: #ffffff; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; padding-bottom: 25px; padding-top: 7px;">You are now an instructor on FirstclassBrain!</td>
-                                              <td style="direction:ltr;text-align:left;">
-                                                <img src="https://uber-static.s3.amazonaws.com/emails/2017/01/spacer_188x157.png" width="188" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 188px; outline: none; text-decoration: none; width: 100%;" border="0" alt="">
-                                              </td>
-                                           </tr>
-                                        </tbody></table>
-                                        <!-- close content -->
-                                        
-                                                              </td>
-                                                             </tr>
-                                        
-                                                          </tbody></table>
-                                                       </td>
-                                                       <td width="12">&nbsp;</td>
+                                                        </tbody></table>
+                                                        </td>
+                                                        <td width="12">&nbsp;</td>
                                                     </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                                <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
                                         </table>
                                         <![endif]-->
-                                                      </td>
+                                                    </td>
                                         
                                         
                                                     </tr>
-                                                 </tbody></table>
-                                              </td>
+                                                </tbody></table>
+                                            </td>
                                         
-                                              <td width="14">&nbsp;</td>
-                                           </tr>
+                                            <td width="14">&nbsp;</td>
+                                            </tr>
                                         </tbody></table>
                                         <!-- close content -->
                                         
@@ -550,17 +378,17 @@ router.post('/signup-instructor', (req, res) => {
                                         
                                         
                                                         </div>
-                                                            <!--[if gte mso 9]>
-                                                          </v:textbox>
-                                                          </v:fill>
+                                                        <!--[if gte mso 9]>
+                                                        </v:textbox>
+                                                        </v:fill>
                                                         </v:rect>
                                                         </v:image>
                                                         <![endif]-->
-                                                      </td>
+                                                    </td>
                                                     </tr>
-                                                 </tbody></table>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                            </td>
+                                            </tr>
                                         </tbody></table>
                                         <!-- close mod1 -->
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border:0;border-collapse:collapse;border-spacing:0;margin:auto;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="tron">
@@ -604,87 +432,82 @@ router.post('/signup-instructor', (req, res) => {
                                         <td>
                                         <!-- mod2 mt_2019/10/23  -->
                                         <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="fee9d07e-d14a-498f-9709-d1970a2a6c42">
-                                           <tbody><tr>
-                                              <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;padding: 0 14px 0 14px;">
-                                                 <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                            <tbody><tr>
+                                            <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;padding: 0 14px 0 14px;">
+                                                <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
                                                     <tbody><tr>
-                                                       <td style="direction:ltr;text-align:left;">
+                                                        <td style="direction:ltr;text-align:left;">
                                         
                                         
                                         
                                         <!--[if (gte mso 9)|(IE)]>
                                         <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t10of12 layout" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                            <tr>
+                                            <td>
+                                                <![endif]-->
+                                                <table border="0" cellpadding="0" cellspacing="0" class="t10of12 layout" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
                                                     <tbody><tr>
-                                                       <td class="mob2_m_pad" style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-bottom: 30px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 30px;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
+                                                        <td class="mob2_m_pad" style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-bottom: 30px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 30px;">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                            <tbody><tr>
                                                                 <td style="direction:ltr;text-align:left;font-size: 0;" valign="middle">
                                         
                                         
                                         <!--[if (gte mso 9)|(IE)]>
                                         <table width="336" cellpadding="0" cellspacing="0" border="0" style="display:inline-block;vertical-align:middle;">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t6of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 336px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
+                                            <tr>
+                                            <td>
+                                                <![endif]-->
+                                                <table border="0" cellpadding="0" cellspacing="0" class="t6of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 336px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
                                                     <tbody><tr>
-                                                       <td style="direction:ltr;text-align:left;padding-bottom: 10px; padding-left: 12px; padding-right: 12px; padding-top: 10px;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
-                                                                <td class="h5" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; padding-bottom: 3px; padding-top: 7px;">Hello ${instructor.firstName}</td>
-                                                             </tr>
-                                                             <tr>
-                                                              <td style="direction:ltr;text-align:left;">
+                                                        <td style="direction:ltr;text-align:left;padding-bottom: 10px; padding-left: 12px; padding-right: 12px; padding-top: 10px;">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                            <tbody><tr>
+                                                                <td class="h5" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; padding-bottom: 3px; padding-top: 7px;">Welcome!</td>
+                                                            </tr>
+                                                            <tr>
+                                                            <td style="direction:ltr;text-align:left;">
                                         
                                         
                                         
                                         <!--[if (gte mso 9)|(IE)]>
                                         <table width="280" align="left" cellpadding="0" cellspacing="0" border="0">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t5of12 layout" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 280px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                            <tr>
+                                            <td>
+                                                <![endif]-->
+                                                <table border="0" cellpadding="0" cellspacing="0" class="t5of12 layout" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 280px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
                                                     <tbody><tr>
-                                                       <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
-                                                                <td class="p2" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-bottom: 12px; padding-top: 7px;"><p>You have just been selected as an instructor on FirstclassBrain.<br /><br />
-                                                                Your password: <b style="color:teal;">${instructor.originalPassword}</b>
+                                                        <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                            <tbody><tr>
+                                                                <td class="p2" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-bottom: 12px; padding-top: 7px;"><p>Hello ${student.firstName}. You have successfully created an account on Firstclassbrain.<br /><br />
+                                                                Your password current password is <b style="color:teal;">${student.originalPassword}</b>
                                                                 <br /><br />
-                                                                Proceed to your Instructor dashboard by clicking on the button below.</p>
+                                                                Verify your account by clicking on the link below. If you do not get redirected to the verify email page, copy the link and paste in your browser. 
+                                                                <br /><br />
+                                                                <a href="https://firstclassbrain.com/verify-email/student?token=${student.emailToken}">https://firstclassbrain.com/verify-email/student?token=${student.emailToken}</a>
+                                                                <br /><br />
+                                                                <a style="color:#f00">NOTE: Make sure to be logged into your account on the browser used for verification.</a></p>
                                         </td>
-                                                             </tr>
-                                                          </tbody></table>
-                                                       </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                        </td>
                                                     </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                                <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
                                         </table>
                                         <![endif]-->
-                                                              </td>
-                                                             </tr>
-                                                             <tr>
-                                                              <td style="direction:ltr;text-align:left;">
-                                        <table border="0" cellpadding="0" cellspacing="0" class="basetable" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                          <tbody><tr>
-                                            <td class="cta textcta" lang="x-textcta" style="direction:ltr;text-align:left;font-family: 'UberMoveText-Bold', 'HelveticaNeueMedium', 'HelveticaNeue-Medium', 'Helvetica Neue Medium', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px;"><a href="https://instructors.firstclassbrain.com" style="text-decoration:none; color:#000000;">Proceed to Dashboard <span style="padding-left:2px;font-size:14px;" class="arrow">❯</span></a></td>
-                                          </tr>
-                                        </tbody></table>
-                                                              </td>
-                                                             </tr>
-                                                          </tbody></table>
-                                                       </td>
+                                                            </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                        </td>
                                                     </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                                <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
                                         </table>
                                         <![endif]-->
                                         
@@ -692,33 +515,33 @@ router.post('/signup-instructor', (req, res) => {
                                         
                                         <!--[if mso]></td>
                                         <td valign="top">
-                                           <![endif]-->
+                                            <![endif]-->
                                         
                                         
                                         
                                         <!--[if (gte mso 9)|(IE)]>
                                         <table width="224" cellpadding="0" cellspacing="0" border="0" style="display:inline-block;vertical-align:middle;">
-                                           <tr>
-                                              <td>
-                                                 <![endif]-->
-                                                 <table border="0" cellpadding="0" cellspacing="0" class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 224px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
+                                            <tr>
+                                            <td>
+                                                <![endif]-->
+                                                <table border="0" cellpadding="0" cellspacing="0" class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 224px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
                                                     <tbody><tr>
-                                                       <td class="desktopContent" style="direction:ltr;text-align:left;padding-bottom: 15px; padding-left: 12px; padding-right: 12px; padding-top: 15px;">
-                                                          <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                             <tbody><tr>
+                                                        <td class="desktopContent" style="direction:ltr;text-align:left;padding-bottom: 15px; padding-left: 12px; padding-right: 12px; padding-top: 15px;">
+                                                        <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                            <tbody><tr>
                                                                 <td style="direction:ltr;text-align:left;">
-                                                                  <div class="desktopContent">
+                                                                <div class="desktopContent">
                                                                     <img src="https://extras.firstclassbrain.com/dashboard.jpg" width="200" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 200px; outline: none; text-decoration: none; width: 100%; border:20px teal solid;" border="0" alt="">
-                                                                  </div>
+                                                                </div>
                                                                 </td>
-                                                             </tr>
-                                                          </tbody></table>
-                                                       </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                        </td>
                                                     </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                                <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
                                         </table>
                                         <![endif]-->
                                         
@@ -728,25 +551,25 @@ router.post('/signup-instructor', (req, res) => {
                                         
                                         
                                                                 </td>
-                                                             </tr>
-                                                          </tbody></table>
-                                                       </td>
+                                                            </tr>
+                                                        </tbody></table>
+                                                        </td>
                                                     </tr>
-                                                 </tbody></table>
-                                                 <!--[if (gte mso 9)|(IE)]>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                                <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
                                         </table>
                                         <![endif]-->
                                         
                                         
                                         
                                         
-                                                       </td>
+                                                        </td>
                                                     </tr>
-                                                 </tbody></table>
-                                              </td>
-                                           </tr>
+                                                </tbody></table>
+                                            </td>
+                                            </tr>
                                         </tbody></table>
                                         
                                         <div class="mobileContent" style="display: none; mso-hide: all;">
@@ -933,15 +756,15 @@ router.post('/signup-instructor', (req, res) => {
                                         <tbody><tr>
                                         <td class="p2" style="direction:ltr;text-align:left;color: #e5e5e5; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 10px; line-height: 18px;">
                                             <a className="link" target="_blank" href="tel:+2349074554735" style="text-decoration: none; color: #e5e5e5">
-                                                +234-(0)907-455-4735,
+                                            +234-(0)907-455-4735,
                                             </a>
                                             <br />
                                             <a className="link" target="_blank" href="mailto:hello@firstclassbrain.com" style="text-decoration: none; color: #e5e5e5">
-                                                hello@firstclassbrain.com
+                                            hello@firstclassbrain.com
                                             </a>
                                             <br>
                                             <a className="link" target="_blank" href="https://goo.gl/maps/mMbMwrJQVxoRrb1R8" rel="noopener noreferrer" target="_blank" style="text-decoration: none; color: #e5e5e5">
-                                                No. 27, Olayiwola Street, New Oko-oba, Lagos State
+                                            No. 27, Olayiwola Street, New Oko-oba, Lagos State
                                             </a>
                                             <br>
                                             <a target="_blank" href="https://firstclassbrain.com/" style="text-decoration: none; color: #e5e5e5">Firstclassbrain.com</a>
@@ -996,11 +819,800 @@ router.post('/signup-instructor', (req, res) => {
                                         </table>
                                         
                                         
-                                          
-                                          
+                                        
+                                        
                                         </body>
                                 </html>
                                 `
+                            
+                            }
+            
+                            passwordTransporter.sendMail(mailOptions, (error, info) => {
+                                if (error) {
+                                    console.log(error)
+                                    return res.status(422).json({error})
+                                } else {
+                                    console.log('Email sent: ' + info.response)
+                                    res.json({message:"Thanks for registering, please check your email to verify your account..."})
+                                }
+                            })
+
+                        })
+                        .catch(err => {
+                            console.log(err)
+                        })
+
+                })
+        })
+        .catch(err => {
+            console.log(err)
+        })
+})
+
+router.post('/signin-student', (req, res) => {
+    const {email, password} = req.body
+    if(!email || !password){
+        return res.status(422).json({error: "Please add email or password"})
+    }
+    Student.findOne({email:email})
+        .then(savedStudent => {
+            if(!savedStudent){
+                return res.status(422).json({error: "Invalid email or password"})
+            }
+            bcrypt.compare(password, savedStudent.password)
+                .then(doMatch => {
+                    if(doMatch){
+                        // return res.json({message: "Successfully logged in"})
+                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        return res.json({token})
+                    }
+                    else{
+                        return res.status(422).json({error: "Invalid email or password"})
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        })
+})
+
+
+router.post('/web/signin-student', (req, res) => {
+    const {email, password} = req.body
+    if(!email || !password){
+        return res.status(422).json({error: "Please add email or password"})
+    }
+    Student.findOne({email:email})
+        .then(savedStudent => {
+            if(!savedStudent){
+                return res.status(422).json({error: "Invalid email or password"})
+            }
+            bcrypt.compare(password, savedStudent.password)
+                .then(doMatch => {
+                    if(doMatch){
+                        // return res.json({message: "Successfully logged in"})
+                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const {
+                            _id, 
+                            firstName,
+                            lastName,
+                            middleName,
+                            email,
+                            phone,
+                            address,
+                            school,
+                            classSelected,
+                            paid,
+                            isVerified,
+                            pic
+                        } = savedStudent
+                        return res.json({token, student:{
+                            _id, 
+                            firstName,
+                            lastName,
+                            middleName,
+                            email,
+                            phone,
+                            address,
+                            school,
+                            classSelected,
+                            paid,
+                            isVerified,
+                            pic
+                        }})
+                    }
+                    else{
+                        return res.status(422).json({error: "Invalid email or password"})
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        })
+})
+
+
+// list of students
+router.get('/all-student', (req, res) => {
+    Student.find()
+        // .populate("postedBy", "_id fullName")
+        .then(student => {
+            res.json({student})
+        })
+        .catch(err => {
+            console.log(err)
+        })
+})
+
+// end of list of students
+
+
+router.post('/signup-instructor', (req, res) => {
+    const {
+        firstName,
+        lastName,
+        phone,
+        email,
+        pic,
+        originalPassword,
+        password
+    } = req.body
+    if(!firstName || !lastName || !phone || !email || !password || !originalPassword){
+        return res.status(422).json({error: "Please add all the fields"})
+    }
+    Instructor.findOne({email: email})
+        .then((savedInstructor) => {
+            if(savedInstructor){
+                return res.status(422).json({error: "Instructor already exists with that email"})
+            }
+            bcrypt.hash(password, 12)
+                .then(hashedPassword => {
+                    const instructor = new Instructor({
+                        firstName,
+                        lastName,
+                        phone,
+                        email,
+                        pic,
+                        originalPassword,
+                        password: hashedPassword
+                    })
+                    instructor.save()
+                        .then(instructor => {
+
+                            let mailOptions =  {
+                                to:instructor.email,
+                                from:'"Firstclassbrain" <password@firstclassbrain.com>',
+                                subject:"Welcome to FirstclassBrain",
+                                html: `
+                                <!DOCTYPE html>
+                                    <html lang="en"
+                                    xmlns="http://www.w3.org/1999/xhtml" 
+                                    xmlns:v="urn:schemas-microsoft-com:vml" 
+                                    xmlns:o="urn:schemas-microsoft-com:office:office"
+                                    >
+                                    <head>
+                                            <meta charset="UTF-8">
+                                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                            <title>Document</title>
+
+                                            <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
+                                            <!--[if !mso]><!-- -->
+                                            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                                            <!--<![endif]-->
+                                            <!--[if gte mso 9]><xml>
+                                            <o:OfficeDocumentSettings>
+                                            <o:AllowPNG/>
+                                            <o:PixelsPerInch>96</o:PixelsPerInch>
+                                            </o:OfficeDocumentSettings>
+                                            </xml><![endif]-->
+
+
+                                            <style>
+                                                h1,.h1{
+                                                font-size: 60px !important;
+                                                line-height: 66px !important;
+                                                }
+                                                h2,.h2{
+                                                font-size: 44px !important;
+                                                line-height: 50px !important;
+                                                }
+                                                .btn a:hover{
+                                                background-color:#000000!important;
+                                                border-color:#000000!important;
+                                                }
+                                                .textcta a:hover{
+                                                color:#000000!important;
+                                                }
+                                                p {margin: 0 !important;}
+                                                .divbox:hover, * [lang~="x-divbox"]:hover {
+                                                background-color: #000000 !important;
+                                                }
+                                                .boxfont:hover, * [lang~="x-boxfont"]:hover {
+                                                color: #ffffff !important;
+                                                }
+
+                                                .mobileContent{display: none;}
+
+                                                @media (max-width: 414px) {
+                                                .mobileContent{display: block !important}
+                                                .desktopContent{display: none !important}
+                                                .mob2_m_pad{padding-bottom: 15px !important}
+
+                                                .hide {display: none !important;}
+                                                .show {display: inline-block !important; width:auto !important; height:auto !important; overflow:visible !important; float:none !important; visibility:visible !important; border:none !important; padding-bottom:0px !important; vertical-align: bottom !important;}
+                                                .show1 {
+                                                        display: block !important;
+                                                        max-height: none !important;
+                                                }
+                                                h1, h2, .h1, .h2{
+                                                        font-size: 34px !important;
+                                                        line-height: 40px !important;
+                                                }
+                                                .mobfb414, .mobfb414 td{
+                                                        padding-left:0 !important;
+                                                        padding-right:0 !important;
+                                                        max-width:414px !important;
+                                                }
+                                                .mobmw414{
+                                                        max-width:414px !important;
+                                                }
+                                                }
+                                            </style>
+
+                                            <style type="text/css"> 
+                                            @media screen and (max-width:699px){.full,.t10of12,.t11of12,.t12of12,.t1of12,.t2of12,.t3of12,.t4of12,.t5of12,.t6of12,.t7of12,.t8of12,.t9of12{width:100%!important;max-width:none!important}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}.headerTextLeft{text-align:left!important}.hide{display:none!important}.mp0{padding:0!important}}@font-face{font-family:UberMove-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Light;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Regular;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Bold;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}
+                                            </style>
+                                    </head>
+                                    <body dir="ltr" style="-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;background-color:#d6d6d5;margin:0;min-width:100%;padding:0;width:100%">
+                                            <span data-blockuuid="ab2f7a3a-54b3-4956-8fcc-02b837adf583" style="display: none; max-height: 0px; font-size: 0px; overflow: hidden; mso-hide: all;">
+                                            Get familiar with useful features like Spotlight and Share My Trip.
+                                            </span>
+                                            
+                                            <style>.yahooHide{display:none!important}</style>
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color:#d6d6d5;border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" bgcolor="#d6d6d5" class="">
+                                            <tbody>
+                                            <tr>
+                                            <td align="center" style="display: block;">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td>
+                                            <![endif]-->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border:0;border-collapse:collapse;border-spacing:0;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="">
+                                            <tbody>
+                                            <tr>
+                                            <td style="background-color:#ffffff">
+                                            
+                                            <!-- mod1  mt_2019/10/23  -->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="bb61e9fc-ef96-4b2d-8311-5e8804baa199">
+                                                <tbody><tr>
+                                                <td class="" align="left" style="direction:ltr;text-align:left;">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                                        <tbody><tr>
+                                                        <td class="mob_bg" valign="top" background="https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif" bgcolor="#000000" style="background-image:url('https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif');background-color: #000000; background-size: contain; background-position: bottom right; background-repeat: no-repeat;" align="center" height="180">
+                                                <!--[if gte mso 9]>
+                                                            <v:image xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style=" border: 0;display: inline-block; width: 700px; height: 240px;" src="https://s3-us-west-2.amazonaws.com/uber-common-public/svc-ugdb/82bac177-a494-410c-a1e7-35abca6689e2_HDGIF2_700x260.gif" />
+                                                            <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style=" border: 0;display: inline-block;position: absolute; width: 700px; height: 260px;">
+                                                            <v:fill  opacity="0%" color="#000000"  />
+                                                            <v:textbox inset="0,0,0,0">
+                                                            <![endif]-->
+                                                            <div>
+                                            
+                                            
+                                            
+                                            <!-- content  mt_2019/10/23  -->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                                <tbody><tr>
+                                            
+                                                <td width="14">&nbsp;</td>
+                                            
+                                                <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;">
+                                                    <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                                        <tbody><tr>
+                                                        <td align="center">
+                                            
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                <td>
+                                                    <![endif]-->
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="t10of12" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                                        <tbody><tr>
+                                                            <td width="12">&nbsp;</td>
+                                                            <td style="direction:ltr;text-align:left;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                                <tbody><tr>
+                                                                    <td style="direction:ltr;text-align:left;">
+                                            
+                                            
+                                                                    </td>
+                                                                </tr>
+                                            
+                                                                <tr>
+                                                                <td valign="top" style="direction:ltr;text-align:left;">
+                                            
+                                                                </td>
+                                                                </tr>
+                                            
+                                                            </tbody></table>
+                                                            </td>
+                                                            <td width="12">&nbsp;</td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                </tr>
+                                            </table>
+                                            <![endif]-->
+                                                        </td>
+                                            
+                                            
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                            
+                                                <td width="14">&nbsp;</td>
+                                                </tr>
+                                            </tbody></table>
+                                            <!-- close content -->
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                            </div>
+                                                            <!--[if gte mso 9]>
+                                                            </v:textbox>
+                                                            </v:fill>
+                                                            </v:rect>
+                                                            </v:image>
+                                                            <![endif]-->
+                                                        </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                                </tr>
+                                            </tbody></table>
+                                            <!-- close mod1 -->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border:0;border-collapse:collapse;border-spacing:0;margin:auto;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="tron">
+                                            <tbody>
+                                            <tr>
+                                            <td align="center">
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color:#fff;border:0;border-collapse:collapse;border-spacing:0;margin:auto;mso-table-lspace:0;mso-table-rspace:0" bgcolor="#ffffff" class="basetable">
+                                            <tbody>
+                                            <tr>
+                                            <td align="center">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="700" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td align="center">
+                                            <![endif]-->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+                                            <tbody>
+                                            <tr>
+                                            <td align="center" style="background-color:#ffffff">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+                                            <tbody>
+                                            <tr>
+                                            <td>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td>
+                                            <![endif]-->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" class="basetable" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0">
+                                            <tbody>
+                                            <tr>
+                                            <td>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="100%" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td>
+                                            <![endif]-->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border:0;border-collapse:collapse;border-spacing:0;mso-table-lspace:0;mso-table-rspace:0" class="">
+                                            <tbody>
+                                            <tr>
+                                            <td>
+                                            <!-- mod2 mt_2019/10/23  -->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="fee9d07e-d14a-498f-9709-d1970a2a6c42">
+                                                <tbody><tr>
+                                                <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;padding: 0 14px 0 14px;">
+                                                    <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                                        <tbody><tr>
+                                                            <td style="direction:ltr;text-align:left;">
+                                            
+                                            
+                                            
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                <td>
+                                                    <![endif]-->
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="t10of12 layout" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                                        <tbody><tr>
+                                                            <td class="mob2_m_pad" style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-bottom: 30px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 30px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                                <tbody><tr>
+                                                                    <td style="direction:ltr;text-align:left;font-size: 0;" valign="middle">
+                                            
+                                            
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="336" cellpadding="0" cellspacing="0" border="0" style="display:inline-block;vertical-align:middle;">
+                                                <tr>
+                                                <td>
+                                                    <![endif]-->
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="t6of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 336px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
+                                                        <tbody><tr>
+                                                            <td style="direction:ltr;text-align:left;padding-bottom: 10px; padding-left: 12px; padding-right: 12px; padding-top: 10px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                                <tbody><tr>
+                                                                    <td class="h5" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 24px; line-height: 30px; padding-bottom: 3px; padding-top: 7px;">Congratulations!</td>
+                                                                </tr>
+                                                                <tr>
+                                                                <td style="direction:ltr;text-align:left;">
+                                            
+                                            
+                                            
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="280" align="left" cellpadding="0" cellspacing="0" border="0">
+                                                <tr>
+                                                <td>
+                                                    <![endif]-->
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="t5of12 layout" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 280px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                                        <tbody><tr>
+                                                            <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-left: 0px !important; padding-right: 0px !important;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                                <tbody><tr>
+                                                                    <td class="p2" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-bottom: 12px; padding-top: 7px;"><p>Hello ${instructor.firstName}. You have just been selected as an instructor on FirstclassBrain.<br /><br />
+                                                                    Your password current password is <b style="color:teal;">${instructor.originalPassword}</b>
+                                                                    <br /><br />
+                                                                    Proceed to your Instructor dashboard by clicking on the button below.</p>
+                                            </td>
+                                                                </tr>
+                                                            </tbody></table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                </tr>
+                                            </table>
+                                            <![endif]-->
+                                                                </td>
+                                                                </tr>
+                                                                <tr>
+                                                                <td style="direction:ltr;text-align:left;">
+                                            <table border="0" cellpadding="0" cellspacing="0" class="basetable" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                            <tbody><tr>
+                                                <td class="cta textcta" lang="x-textcta" style="direction:ltr;text-align:left;font-family: 'UberMoveText-Bold', 'HelveticaNeueMedium', 'HelveticaNeue-Medium', 'Helvetica Neue Medium', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px;"><a href="https://instructors.firstclassbrain.com" style="text-decoration:none; color:#000000;">Proceed to Dashboard <span style="padding-left:2px;font-size:14px;" class="arrow">❯</span></a></td>
+                                            </tr>
+                                            </tbody></table>
+                                                                </td>
+                                                                </tr>
+                                                            </tbody></table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                </tr>
+                                            </table>
+                                            <![endif]-->
+                                            
+                                            
+                                            
+                                            <!--[if mso]></td>
+                                            <td valign="top">
+                                                <![endif]-->
+                                            
+                                            
+                                            
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="224" cellpadding="0" cellspacing="0" border="0" style="display:inline-block;vertical-align:middle;">
+                                                <tr>
+                                                <td>
+                                                    <![endif]-->
+                                                    <table border="0" cellpadding="0" cellspacing="0" class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; display: inline-block; max-width: 224px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: middle; width: 100%;">
+                                                        <tbody><tr>
+                                                            <td class="desktopContent" style="direction:ltr;text-align:left;padding-bottom: 15px; padding-left: 12px; padding-right: 12px; padding-top: 15px;">
+                                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                                                <tbody><tr>
+                                                                    <td style="direction:ltr;text-align:left;">
+                                                                    <div class="desktopContent">
+                                                                        <img src="https://extras.firstclassbrain.com/dashboard.jpg" width="200" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 200px; outline: none; text-decoration: none; width: 100%; border:20px teal solid;" border="0" alt="">
+                                                                    </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody></table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                </tr>
+                                            </table>
+                                            <![endif]-->
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody></table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                    <!--[if (gte mso 9)|(IE)]>
+                                                </td>
+                                                </tr>
+                                            </table>
+                                            <![endif]-->
+                                            
+                                            
+                                            
+                                            
+                                                            </td>
+                                                        </tr>
+                                                    </tbody></table>
+                                                </td>
+                                                </tr>
+                                            </tbody></table>
+                                            
+                                            <div class="mobileContent" style="display: none; mso-hide: all;">
+                                            <img src="https://extras.firstclassbrain.com/dashboard.jpg" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 100%; outline: none; text-decoration: none; width: 100%; border-top:20px teal solid; border-bottom:20px teal solid; margin-bottom:20px;" border="0" alt="">
+                                            </div>
+                                            
+                                            
+                                            <!-- close mod2 mt_2019/10/23  -->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            <!-- END LIST-->
+                                            </td>
+                                            </tr>
+                                            <!-- END BODY-->
+                                            </tbody>
+                                            </table>
+                                            <!-- footer update july 31 2019  cf    -->
+                                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="background-color: #000000; border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="be0d7749-5ff0-40a5-834d-5b24a842477c">
+                                            <tbody>
+                                            <tr>
+                                            <td class="outsidegutter" align="left" style="direction:ltr;text-align:left;padding: 0 14px 0 14px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
+                                            <tbody>
+                                            
+                                            <!-- Top half -->
+                                            <tr>
+                                            <td style="direction:ltr;text-align:left;padding-top: 30px; padding-bottom: 30px;">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td>
+                                            <![endif]-->
+                                            <table border="0" cellpadding="0" cellspacing="0" class="t10of12" align="center" style="Margin: 0 auto; border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;padding-left: 0; padding-right: 0;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; direction: rtl; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                            <tbody><tr>
+                                            <td class="ignoreTd" style="font-size:0; text-align: left ">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="left" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td width="224">
+                                            <![endif]-->
+                                            <table border="0" cellpadding="0" cellspacing="0" class="t5of12" style="border: none; border-collapse: collapse; border-spacing: 0; direction: ltr; display: inline-block; max-width: 224px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: top; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;padding-left: 12px; padding-right: 12px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;">
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            
+                                            
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            
+                                            </td>
+                                            </tr>
+                                            <!-- END top half -->
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            
+                                            <!-- bottom half -->
+                                            <tr>
+                                            <td style="direction:ltr;text-align:left; padding-bottom: 30px;">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td width="560">
+                                            <![endif]-->
+                                            <table border="0" cellpadding="0" cellspacing="0" class="t10of12" align="center" style="Margin: 0 auto; border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;padding-left: 0; padding-right: 0;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; direction: rtl; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                            <tbody><tr>
+                                            <td class="ignoreTd" style="font-size:0; text-align: left">
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            <table width="560" align="left" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                            <td width="224">
+                                            <![endif]-->
+                                            <table border="0" cellpadding="0" cellspacing="0" class="t4of12" style="border: none; border-collapse: collapse; border-spacing: 0; direction: ltr; display: inline-block; max-width: 224px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: top; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;padding-left: 12px; padding-right: 12px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; ">
+                                            <tbody><tr>
+                                            <td class="p3 white" style="padding-bottom: 12px; direction:ltr;text-align:left;">
+                                            
+                                            <!-- social table -->
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 130px;">
+                                            <tbody>
+                                            <tr>
+                                            <td width="43" align="center" style="direction: ltr; text-align: left;">
+                                            <a href="https://www.linkedIn.com/company/firstclassbrain" target="_blank"> <img src="https://extras.firstclassbrain.com/facebook-icon.svg" width="13" height="" border="0" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-height: 17px; max-width: 13px; outline: none; text-decoration: none; width: 100%;">
+                                            </a>
+                                            </td>
+                                            <td width="43" align="center" style="direction: ltr; text-align: left;">
+                                            <a href="https://mobile.twitter.com/firstclassbrain" target="_blank"> <img src="https://extras.firstclassbrain.com/twitter-icon.svg" width="19" height="" border="0" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-height: 17px; max-width: 19px; outline: none; text-decoration: none; width: 100%;">
+                                            </a>
+                                            </td>
+                                            <td width="43" align="center" style="direction: ltr; text-align: left;">
+                                            <a href="https://www.linkedIn.com/company/firstclassbrain" target="_blank"> <img src="https://extras.firstclassbrain.com/linkedin-icon.svg" width="19" height="" border="0" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-height: 17px; max-width: 19px; outline: none; text-decoration: none; width: 100%;">
+                                            </a>
+                                            </td>
+                                            <td width="43" align="center" style="direction: ltr; text-align: left;">
+                                            <a href="https://www.instagram.com/firstclassbrain" target="_blank"> <img src="https://extras.firstclassbrain.com/instagram-icon.svg" width="16" height="" border="0" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-height: 17px; max-width: 16px; outline: none; text-decoration: none; width: 100%;">
+                                            </a>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!-- END social table -->
+                                            
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            <td width="336">
+                                            <![endif]-->
+                                            <table border="0" cellpadding="0" cellspacing="0" class="t6of12" style="border: none; border-collapse: collapse; border-spacing: 0; direction: ltr; display: inline-block; max-width: 336px; mso-table-lspace: 0; mso-table-rspace: 0; vertical-align: top; width: 100%;">
+                                            <tbody><tr>
+                                            <td style="direction:ltr;text-align:left;padding-left: 12px; padding-right: 12px;">
+                                            <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
+                                            <tbody><tr>
+                                            <td class="p2" style="direction:ltr;text-align:left;color: #e5e5e5; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 10px; line-height: 18px;">
+                                                <a className="link" target="_blank" href="tel:+2349074554735" style="text-decoration: none; color: #e5e5e5">
+                                                +234-(0)907-455-4735,
+                                                </a>
+                                                <br />
+                                                <a className="link" target="_blank" href="mailto:hello@firstclassbrain.com" style="text-decoration: none; color: #e5e5e5">
+                                                hello@firstclassbrain.com
+                                                </a>
+                                                <br>
+                                                <a className="link" target="_blank" href="https://goo.gl/maps/mMbMwrJQVxoRrb1R8" rel="noopener noreferrer" target="_blank" style="text-decoration: none; color: #e5e5e5">
+                                                No. 27, Olayiwola Street, New Oko-oba, Lagos State
+                                                </a>
+                                                <br>
+                                                <a target="_blank" href="https://firstclassbrain.com/" style="text-decoration: none; color: #e5e5e5">Firstclassbrain.com</a>
+                                            
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            </tbody></table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            <!-- END bottom half -->
+                                            
+                                            
+                                            
+                                            </tbody></table>
+                                            </td>
+                                            </tr>
+                                            
+                                            
+                                            </tbody></table>
+                                            <!-- close footer update - ces -->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            <!--[if (gte mso 9)|(IE)]>
+                                            </td>
+                                            </tr>
+                                            </table>
+                                            <![endif]-->
+                                            </td>
+                                            </tr>
+                                            </tbody>
+                                            </table>
+                                            
+                                            
+                                            
+                                            
+                                            </body>
+                                    </html>
+                                `
+                            
                             }
             
                             passwordTransporter.sendMail(mailOptions, (error, info) => {
@@ -1243,7 +1855,7 @@ router.post('/admin/reset-password',(req,res)=>{
                     to:admin.email,
                     from:'"Firstclassbrain" <password@firstclassbrain.com>',
                     subject:"Reset Password",
-                    html:   `
+                    html:   `                    
                     <!DOCTYPE html>
                     <html lang="en"
                         xmlns="http://www.w3.org/1999/xhtml" 
@@ -1254,7 +1866,7 @@ router.post('/admin/reset-password',(req,res)=>{
                             <meta charset="UTF-8">
                             <meta name="viewport" content="width=device-width, initial-scale=1.0">
                             <title>Document</title>
-                    
+
                             <!-- <meta http-equiv="Content-Type" content="text/html; charset=utf-8"> -->
                             <!--[if !mso]><!-- -->
                             <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -1265,8 +1877,8 @@ router.post('/admin/reset-password',(req,res)=>{
                             <o:PixelsPerInch>96</o:PixelsPerInch>
                             </o:OfficeDocumentSettings>
                             </xml><![endif]-->
-                    
-                    
+
+
                             <style>
                                 h1,.h1{
                                     font-size: 60px !important;
@@ -1290,14 +1902,14 @@ router.post('/admin/reset-password',(req,res)=>{
                                 .boxfont:hover, * [lang~="x-boxfont"]:hover {
                                     color: #ffffff !important;
                                 }
-                    
+
                                 .mobileContent{display: none;}
-                    
+
                                 @media (max-width: 414px) {
                                     .mobileContent{display: block !important}
                                     .desktopContent{display: none !important}
                                     .mob2_m_pad{padding-bottom: 15px !important}
-                    
+
                                     .hide {display: none !important;}
                                     .show {display: inline-block !important; width:auto !important; height:auto !important; overflow:visible !important; float:none !important; visibility:visible !important; border:none !important; padding-bottom:0px !important; vertical-align: bottom !important;}
                                     .show1 {
@@ -1318,7 +1930,7 @@ router.post('/admin/reset-password',(req,res)=>{
                                     }
                                 }
                             </style>
-                    
+
                             <style type="text/css"> 
                                 @media screen and (max-width:699px){.full,.t10of12,.t11of12,.t12of12,.t1of12,.t2of12,.t3of12,.t4of12,.t5of12,.t6of12,.t7of12,.t8of12,.t9of12{width:100%!important;max-width:none!important}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}.headerTextLeft{text-align:left!important}.hide{display:none!important}.mp0{padding:0!important}}@font-face{font-family:UberMove-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMove-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Light;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Light.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Regular;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Regular.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Medium;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Medium.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}@font-face{font-family:UberMoveText-Bold;src:url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.woff) format('woff'),url(https://s3.amazonaws.com/uber-static/emails/2018/global/fonts/UberMove/UberMoveText-Bold.ttf) format('truetype');font-weight:400!important;font-style:normal!important;mso-font-alt:'Arial'}a[x-apple-data-detectors]{color:inherit!important;text-decoration:none!important;font-size:inherit!important;font-family:inherit!important;font-weight:inherit!important;line-height:inherit!important}
                             </style>
@@ -1341,48 +1953,7 @@ router.post('/admin/reset-password',(req,res)=>{
                             <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border:0;border-collapse:collapse;border-spacing:0;max-width:700px;mso-table-lspace:0;mso-table-rspace:0" class="">
                             <tbody>
                             <tr>
-                            <td style="background-color:#ffffff">
-                            <!-- Logo  mt_2019/10/23  -->
-                            <table width="100%" border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" data-blockuuid="bb61e9fc-ef96-4b2d-8311-5e8804baa199">
-                                <tbody><tr>
-                                    <td width="14" style="background-color:#000000;">&nbsp;</td>
-                                    <td class="outsidegutter mobile_b_pad" align="left" style="direction:ltr;text-align:left;background-color: #000000; padding-bottom: 22px; padding-top: 12px;">
-                                        <table border="0" cellpadding="0" cellspacing="0" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;" class="">
-                                        <tbody><tr>
-                                            <td align="center">
-                            
-                            
-                            
-                            <!--[if (gte mso 9)|(IE)]>
-                            <table width="560" align="center" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td>
-                                        <![endif]-->
-                                        <table border="0" cellpadding="0" cellspacing="0" class="10of12" align="center" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 560px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                        <tbody><tr>
-                                            <td width="12">&nbsp;</td>
-                                            <td style="direction:ltr;text-align:left;">
-                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                    <tbody></tbody>
-                                                </table>
-                                            </td>
-                                            <td width="12">&nbsp;</td>
-                                        </tr>
-                                        </tbody></table>
-                                        <!--[if (gte mso 9)|(IE)]>
-                                    </td>
-                                </tr>
-                            </table>
-                            <![endif]-->
-                            
-                                            </td>
-                                        </tr>
-                                        </tbody></table>
-                                    </td>
-                                    <td width="14" style="background-color:#000000;">&nbsp;</td>
-                                </tr>
-                            </tbody></table>
-                            <!-- close logo -->
+                            <td style="background-color:#000">
                             
                             
                             
@@ -1427,28 +1998,7 @@ router.post('/admin/reset-password',(req,res)=>{
                                                     <tbody><tr>
                                                     <td style="direction:ltr;text-align:left;">
                             
-                            
-                            <!--[if (gte mso 9)|(IE)]>
-                            <table width="347" align="left" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                    <td>
-                                        <![endif]-->
-                                        <table border="0" cellpadding="0" cellspacing="0" class="t6of12 layout" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; max-width: 347px; mso-table-lspace: 0; mso-table-rspace: 0; width: 100%;">
-                                        <tbody><tr>
-                                            <td style="direction:ltr;text-align:left;font-size: 1px; height: 1px; line-height: 1px; padding-bottom: 0px; padding-left: 0px !important; padding-right: 0px !important; padding-top: 25px;">
-                                                <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
-                                                    <tbody><tr>
-                                                    <td class="h2 white" style="direction:ltr;text-align:left;color: #ffffff; font-family: 'UberMove-Medium', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 34px; line-height: 40px; padding-bottom: 0px; padding-top: 7px;">Reset Password</td>
-                                                </tr>
-                                                </tbody></table>
-                                            </td>
-                                        </tr>
-                                        </tbody></table>
-                                        <!--[if (gte mso 9)|(IE)]>
-                                    </td>
-                                </tr>
-                            </table>
-                            <![endif]-->
+                        
                             
                                                     </td>
                                                     </tr>
@@ -1689,7 +2239,7 @@ router.post('/admin/reset-password',(req,res)=>{
                             </tbody></table>
                             
                             <div class="mobileContent" style="display: none; mso-hide: all;">
-                            <img src="https://extras.firstclassbrain.com/password.jpg" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 100%; outline: none; text-decoration: none; width: 100%; border-top:20px teal solid; border-bottom:20px teal solid; margin-bottom:20px;" border="0" alt="">
+                            <img src="https://extras.firstclassbrain.com/dashboard.jpg" height="" style="-ms-interpolation-mode: bicubic; clear: both; display: block; height: auto; max-width: 100%; outline: none; text-decoration: none; width: 100%; border-top:20px teal solid; border-bottom:20px teal solid; margin-bottom:20px;" border="0" alt="">
                             </div>
                             
                             
@@ -2102,44 +2652,6 @@ router.post('/student/new-password',(req,res)=>{
     }).catch(err=>{
         console.log(err)
     })
-})
-
-router.post('/contact', (req,res) => {
-    const { first_name, last_name, phone_number, email, message } = req.body
-    if( !first_name || !last_name || !phone_number || !email || !message ){
-        return res.status(422).json({error: "Please add all the fields"})
-    }
-
-    const name = `${first_name.charAt(0).toUpperCase() + first_name.slice(1)} ${last_name.charAt(0).toUpperCase() + last_name.slice(1)}`
-
-    let mailOptions =  {
-        to: 'wisdomanaba83@gmail.com',
-        from: email,
-        subject:`Contact Form: Message from ${name}`,
-        text: `Name: ${name}
-        Email: ${email}
-        Phone no: ${phone_number}
-        Message: ${message}
-        `
-    }
-
-    contactTransporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error)
-            return res.status(422).json({error})
-        } else {
-            contact.save()
-                .then(message => {
-                    console.log('Email sent: ' + info.response)
-                    res.json({message: "Messaeg sent successfully", data: message})
-                })
-                .catch(err => {
-                    res.json({err})
-                    console.log(err)
-                })
-        }
-    })
-    
 })
 
 router.put('/updatepic/admin',requireStudentLogin,(req,res)=>{
