@@ -34,106 +34,106 @@ var passwordTransporter = nodemailer.createTransport({
     }
 })
 
-var transporter = nodemailer.createTransport({
-    host: 'firstclassbrain.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: 'contact@firstclassbrain.com',
-      pass: 'Firstclassbrain23456'
-    },
-    tls: {
-        rejectUnauthorized: false
-    }
-})
+// var transporter = nodemailer.createTransport({
+//     host: 'firstclassbrain.com',
+//     port: 465,
+//     secure: true,
+//     auth: {
+//       user: 'contact@firstclassbrain.com',
+//       pass: 'Firstclassbrain23456'
+//     },
+//     tls: {
+//         rejectUnauthorized: false
+//     }
+// })
 
-transporter.verify(function(error, success) {
-  if (error) {
-    console.log(error);
-  } else {
-    console.log("Server is ready to take our messages");
-  }
-})
+// transporter.verify(function(error, success) {
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log("Server is ready to take our messages");
+//   }
+// })
 
-router.post('/contact-form', (req, res) => {
-  const { 
-      first_name, 
-      last_name, 
-      email, 
-      phone,
-      message
-    } = req.body
+// router.post('/contact-form', (req, res) => {
+//   const { 
+//       first_name, 
+//       last_name, 
+//       email, 
+//       phone,
+//       message
+//     } = req.body
 
-  const sendMail = async () => {
-    try{
+//   const sendMail = async () => {
+//     try{
       
-      let mailOptions = {
-        from: `"Contact Form Message" <contact@firstclassbrain.com>`,
-        to: `g.joshua.e@gmail.com`,
-        subject: `${first_name} has a message for you`,
-        text: `Message from ${first_name}`,
-        html: `
-            <p>My name is <strong>${first_name} ${last_name}</strong> and I just want to say <strong>${message}</strong></p>
+//       let mailOptions = {
+//         from: `"Contact Form Message" <contact@firstclassbrain.com>`,
+//         to: `g.joshua.e@gmail.com`,
+//         subject: `${first_name} has a message for you`,
+//         text: `Message from ${first_name}`,
+//         html: `
+//             <p>My name is <strong>${first_name} ${last_name}</strong> and I just want to say <strong>${message}</strong></p>
 
-            <p>Send me an email at ${email} or call me on ${phone}</p>
-        `
-      }
+//             <p>Send me an email at ${email} or call me on ${phone}</p>
+//         `
+//       }
 
-      transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-          res.json(error)
-          console.log(error)
-        }
-        console.log('Email sent: ' + info.response)
-      })
+//       transporter.sendMail(mailOptions, function(error, info){
+//         if (error) {
+//           res.json(error)
+//           console.log(error)
+//         }
+//         console.log('Email sent: ' + info.response)
+//       })
 
-    }catch(err){
-      res.json(err)
-      console.log(err)
-    }
-  }
+//     }catch(err){
+//       res.json(err)
+//       console.log(err)
+//     }
+//   }
 
-  sendMail()
+//   sendMail()
 
-})
+// })
 
-router.post('/contact', (req,res) => {
-    const { first_name, last_name, phone_number, email, message } = req.body
-    if( !first_name || !last_name || !phone_number || !email || !message ){
-        return res.status(422).json({error: "Please add all the fields"})
-    }
+// router.post('/contact', (req,res) => {
+//     const { first_name, last_name, phone_number, email, message } = req.body
+//     if( !first_name || !last_name || !phone_number || !email || !message ){
+//         return res.status(422).json({error: "Please add all the fields"})
+//     }
 
-    const name = `${first_name.charAt(0).toUpperCase() + first_name.slice(1)} ${last_name.charAt(0).toUpperCase() + last_name.slice(1)}`
+//     const name = `${first_name.charAt(0).toUpperCase() + first_name.slice(1)} ${last_name.charAt(0).toUpperCase() + last_name.slice(1)}`
 
-    let mailOptions =  {
-        to: 'wisdomanaba83@gmail.com',
-        from: email,
-        subject:`Contact Form: Message from ${name}`,
-        text: `Name: ${name}
-        Email: ${email}
-        Phone no: ${phone_number}
-        Message: ${message}
-        `
-    }
+//     let mailOptions =  {
+//         to: 'wisdomanaba83@gmail.com',
+//         from: email,
+//         subject:`Contact Form: Message from ${name}`,
+//         text: `Name: ${name}
+//         Email: ${email}
+//         Phone no: ${phone_number}
+//         Message: ${message}
+//         `
+//     }
 
-    contactTransporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.log(error)
-            return res.status(422).json({error})
-        } else {
-            contact.save()
-                .then(message => {
-                    console.log('Email sent: ' + info.response)
-                    res.json({message: "Messaeg sent successfully", data: message})
-                })
-                .catch(err => {
-                    res.json({err})
-                    console.log(err)
-                })
-        }
-    })
+//     contactTransporter.sendMail(mailOptions, (error, info) => {
+//         if (error) {
+//             console.log(error)
+//             return res.status(422).json({error})
+//         } else {
+//             contact.save()
+//                 .then(message => {
+//                     console.log('Email sent: ' + info.response)
+//                     res.json({message: "Messaeg sent successfully", data: message})
+//                 })
+//                 .catch(err => {
+//                     res.json({err})
+//                     console.log(err)
+//                 })
+//         }
+//     })
     
-})
+// })
 
 
 router.post('/verify-email/student', (req, res) => {
@@ -904,7 +904,8 @@ router.post('/web/signin-student', (req, res) => {
                             classSelected,
                             paid,
                             isVerified,
-                            pic
+                            pic,
+                            emailToken
                         } = savedStudent
                         return res.json({token, student:{
                             _id, 
@@ -918,7 +919,8 @@ router.post('/web/signin-student', (req, res) => {
                             classSelected,
                             paid,
                             isVerified,
-                            pic
+                            pic,
+                            emailToken
                         }})
                     }
                     else{
