@@ -2612,7 +2612,7 @@ router.post('/student/reset-password',(req,res)=>{
                     to:student.email,
                     from:'"Firstclassbrain" <password@firstclassbrain.com>',
                     subject:"Password reset request",
-                    text:   `                    
+                    html:   `                    
                     <!DOCTYPE html>
                     <html lang="en"
                         xmlns="http://www.w3.org/1999/xhtml" 
