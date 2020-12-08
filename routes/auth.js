@@ -485,7 +485,7 @@ router.post('/signup-student', (req, res) => {
                                                                 <br /><br />
                                                                 Verify your account by clicking on the link below. If you do not get redirected to the verify email page, copy the link and paste in your browser. 
                                                                 <br /><br />
-                                                                <a href="https://firstclassbrain.com/verify-email/student?token=${student.emailToken}">https://firstclassbrain.com/verify-email/student?token=${student.emailToken}</a>
+                                                                <a href="https://firstclassbrain.com/verify-account/${student.emailToken}">https://firstclassbrain.com/verify-account/${student.emailToken}</a>
                                                                 <br /><br />
                                                                 <a style="color:#f00">NOTE: Make sure to be logged into your account on the browser used for verification.</a></p>
                                         </td>
