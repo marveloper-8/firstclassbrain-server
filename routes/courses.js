@@ -32,7 +32,7 @@ router.post('/upload-course', (req, res) => {
         pdf
     } = req.body
 
-    if(!courseThumbnail || !classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !postedByWho || !postedByWhoLink){
+    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !postedByWho || !postedByWhoLink){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
