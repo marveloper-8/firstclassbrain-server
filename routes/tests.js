@@ -19,6 +19,7 @@ router.post('/upload-test', (req, res) => {
         minutes,
         postedByWho,
         postedByWhoLink,
+        image,
         questions,
     } = req.body
     if(!type || !classSelected || !subject || !term || !week || !hours || !minutes || !topic || !questions || !postedByWho || !postedByWhoLink){
@@ -36,6 +37,7 @@ router.post('/upload-test', (req, res) => {
         topic,
         postedByWho,
         postedByWhoLink,
+        image,
         questions
     })
     Test.findOne({topic: topic})
@@ -50,6 +52,17 @@ router.post('/upload-test', (req, res) => {
         })
         .catch(err => { console.log(err) })
 
+})
+
+router.post('/update-test-image/:postId',( req,res)=>{
+    const { image } = req.body
+    Post.findByIdAndUpdate(req.params.postId,{$set:{image}},{new:true},
+        (err, result)=>{
+            if(err){
+                return res.status(422).json({error:"Image update unsuccessful"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
 })
 
 router.get('/all-tests', (req, res) => {

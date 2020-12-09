@@ -72,9 +72,8 @@ const testSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        correctionImage: {
-            type: String,
-            default:"https://res.cloudinary.com/cnq/image/upload/v1586197723/noimage_d4ipmd.png"
+        image: {
+            type: String
         },
     }],
     students:[{
