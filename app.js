@@ -37,6 +37,7 @@ require('./models/admin')
 require('./models/courses')
 require('./models/tests')
 require('./models/test_score')
+require('./models/test_item')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));

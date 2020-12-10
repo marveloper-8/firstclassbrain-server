@@ -5,6 +5,7 @@ const requireAdminLogin = require('../middleware/requireAdminLogin')
 const requireInstructorLogin = require('../middleware/requireInstructorLogin')
 const requireStudentLogin = require('../middleware/requireStudentLogin')
 const Test = mongoose.model("Test")
+const TestItem = mongoose.model("TestItem")
 
 
 router.post('/upload-test', (req, res) => {
@@ -91,6 +92,22 @@ router.get('/test-details/:testId', (req, res) => {
     Test.findOne({_id: req.params.testId})
     .then(test => {
         Test.find({testId: req.params.testId})
+        .populate("postedBy", "_id topic")
+        .exec((err, tests) => {
+            if(err){
+                return res.status(422).json({error: err})
+            }
+            res.json({test, tests})
+        })
+    }).catch(err => {
+        return res.status(404).json({error: "Property not found"})
+    })
+})
+
+router.get('/test-item-details/:testId', (req, res) => {
+    TestItem.findOne({_id: req.params.testId})
+    .then(test => {
+        TestItem.find({testId: req.params.testId})
         .populate("postedBy", "_id topic")
         .exec((err, tests) => {
             if(err){
