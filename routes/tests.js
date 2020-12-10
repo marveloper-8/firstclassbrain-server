@@ -21,9 +21,10 @@ router.post('/upload-test', (req, res) => {
         postedByWho,
         postedByWhoLink,
         image,
+        title,
         questions,
     } = req.body
-    if(!type || !classSelected || !subject || !term || !week || !minutes || !topic || !questions || !postedByWho || !postedByWhoLink){
+    if(!type || !classSelected || !subject || !term || !week || !minutes || !topic || !questions || !postedByWho || !postedByWhoLink || !title){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -39,6 +40,7 @@ router.post('/upload-test', (req, res) => {
         postedByWho,
         postedByWhoLink,
         image,
+        title,
         questions
     })
     Test.findOne({topic: topic})

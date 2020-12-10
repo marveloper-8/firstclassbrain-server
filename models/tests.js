@@ -40,6 +40,10 @@ const testSchema = new mongoose.Schema({
     topic: {
         type: String
     },
+    title: {
+        type: String,
+        required: true
+    },
     questions: [{
         question: {
             type: String,
