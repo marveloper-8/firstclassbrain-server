@@ -170,7 +170,7 @@ router.post('/signup-student', (req, res) => {
         originalPassword,
         password
     } = req.body
-    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password || !originalPassword){
+    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
     Student.findOne({email: email})
