@@ -3326,6 +3326,19 @@ router.put('/updatepic/student',requireStudentLogin,(req,res)=>{
     })
 })
 
+router.put('/update-class',requireStudentLogin,(req,res)=>{
+
+    const { classSelected } = req.body
+
+    Student.findByIdAndUpdate(req.student._id,{$set:{classSelected}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Picture cannot post"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
 
 router.put('/settings',requireStudentLogin,(req,res)=>{
 
