@@ -16,6 +16,7 @@ const { Contact } = require('../models/contact')
 
 const requireStudentLogin = require('../middleware/requireStudentLogin')
 const requireAdminLogin = require('../middleware/requireAdminLogin')
+const requireInstructorLogin = require('../middleware/requireInstructorLogin')
 
 const {EMAIL,CONTACT_EMAIL ,PASSWORD, MAILHOST, JWT_SECRET} = require('../config/keys')
 
@@ -891,7 +892,7 @@ router.post('/web/signin-student', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)                        
                         const {
                             _id, 
                             firstName,
@@ -3287,22 +3288,29 @@ router.post('/student/new-password',(req,res)=>{
     })
 })
 
-router.put('/updatepic/admin',requireStudentLogin,(req,res)=>{
+router.put('/updatepic/admin',requireAdminLogin,(req,res)=>{
 
     const { pic } = req.body
 
-    Admin.findByIdAndUpdate(req.admin._id,{$set:{pic}},{new:true},
-        (err,result)=>{
-            if(err){
-                return res.status(422).json({error:"Picture cannot post"})
-            }
-            res.json({message:"Record has been Updated..!!", result})
+    if(!pic){
+        return res.status(422).json({error:"Pls select an image..."})
+    }
+
+    Admin.findByIdAndUpdate(req.admin._id, { pic }, function (err, result) { 
+        if(err){
+            return res.status(422).json({error:"Picture cannot post"})
+        }
+        res.json({message:"Record has been Updated..!!", result})
     })
 })
 
-router.put('/updatepic/instructor',requireStudentLogin,(req,res)=>{
+router.put('/updatepic/instructor',requireInstructorLogin,(req,res)=>{
 
     const { pic } = req.body
+
+    if(!pic){
+        return res.status(422).json({error:"Pls select an image..."})
+    }
 
     Instructor.findByIdAndUpdate(req.instructor._id,{$set:{pic}},{new:true},
         (err,result)=>{
@@ -3316,6 +3324,10 @@ router.put('/updatepic/instructor',requireStudentLogin,(req,res)=>{
 router.put('/updatepic/student',requireStudentLogin,(req,res)=>{
 
     const { pic } = req.body
+
+    if(!pic){
+        return res.status(422).json({error:"Pls select an image..."})
+    }
 
     Student.findByIdAndUpdate(req.student._id,{$set:{pic}},{new:true},
         (err,result)=>{
