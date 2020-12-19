@@ -3266,6 +3266,19 @@ router.post('/student/reset-password',(req,res)=>{
     })
 })
 
+router.put('/student/change-password',requireStudentLogin,(req,res)=>{
+
+    const { password } = req.body
+
+    Student.findByIdAndUpdate(req.student._id,{$set:{password}},{new:true},
+        (err,result)=>{
+            if(err){
+                return res.status(422).json({error:"Password was not updated"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
 router.post('/student/new-password',(req,res)=>{
     const newPassword = req.body.password
     const sentToken = req.body.token
