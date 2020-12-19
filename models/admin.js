@@ -26,6 +26,10 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    pic:{
+        type:String,
+        default:"https://extras.firstclassbrain.com/student-dp.png"
+    }
 })
 
 mongoose.model("Admin", adminSchema)
