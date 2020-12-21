@@ -11,7 +11,9 @@ const adminSchema = new mongoose.Schema({
     },
     email:{
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true
     },
     resetToken:{
         type: String,
