@@ -15,7 +15,9 @@ const instructorSchema = new mongoose.Schema({
     },
     email:{
         type: String,
-        required: true
+        required: true,
+        unique: true,
+        lowercase: true
     },
     originalPassword: {
         type: String,

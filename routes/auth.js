@@ -171,10 +171,15 @@ router.post('/signup-student', (req, res) => {
         originalPassword,
         password
     } = req.body
+
     if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
-    Student.findOne({email: email})
+
+    const email_lowercase = email.toLowerCase()
+
+
+    Student.findOne({email: email_lowercase})
         .then((savedStudent) => {
             if(savedStudent){
                 return res.status(422).json({error: "Student already exists with that email"})
@@ -852,10 +857,14 @@ router.post('/signup-student', (req, res) => {
 
 router.post('/signin-student', (req, res) => {
     const {email, password} = req.body
+
     if(!email || !password){
         return res.status(422).json({error: "Please add email or password"})
     }
-    Student.findOne({email:email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Student.findOne({email:email_lowercase})
         .then(savedStudent => {
             if(!savedStudent){
                 return res.status(422).json({error: "Invalid email or password"})
@@ -880,10 +889,14 @@ router.post('/signin-student', (req, res) => {
 
 router.post('/web/signin-student', (req, res) => {
     const {email, password} = req.body
+
     if(!email || !password){
         return res.status(422).json({error: "Please add email or password"})
     }
-    Student.findOne({email:email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Student.findOne({email:email_lowercase})
         .then(savedStudent => {
             if(!savedStudent){
                 return res.status(422).json({error: "Invalid email or password"})
@@ -960,10 +973,14 @@ router.post('/signup-instructor', (req, res) => {
         originalPassword,
         password
     } = req.body
+
     if(!firstName || !lastName || !phone || !email || !password || !originalPassword){
         return res.status(422).json({error: "Please add all the fields"})
     }
-    Instructor.findOne({email: email})
+
+    const email_lowercase = email.toLowerCase()
+    
+    Instructor.findOne({email: email_lowercase})
         .then((savedInstructor) => {
             if(savedInstructor){
                 return res.status(422).json({error: "Instructor already exists with that email"})
@@ -1658,10 +1675,14 @@ router.post('/verify-email/instructor', (req, res) => {
 
 router.post('/signin-instructor', (req, res) => {
     const {email, password} = req.body
+
     if(!email || !password){
         return res.status(422).json({error: "Please add email or password"})
     }
-    Instructor.findOne({email:email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Instructor.findOne({email:email_lowercase})
         .then(
             savedInstructor => {
             if(!savedInstructor){
@@ -1705,10 +1726,14 @@ router.post('/signup-admin', (req, res) => {
         email,
         password
     } = req.body
+
     if(!firstName || !lastName || !email || !password){
         return res.status(422).json({error: "Please add all the fields"})
     }
-    Admin.findOne({email: email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Admin.findOne({email: email_lowercase})
         .then((savedAdmin) => {
             if(savedAdmin){
                 return res.status(422).json({error: "Admin already exists with that email"})
@@ -1739,10 +1764,14 @@ router.post('/signup-admin', (req, res) => {
 
 router.post('/signin-admin', (req, res) => {
     const {email, password} = req.body
+
     if(!email || !password){
         return res.status(422).json({error: "Please add email or password"})
     }
-    Admin.findOne({email:email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Admin.findOne({email:email_lowercase})
         .then(savedAdmin => {
             if(!savedAdmin){
                 return res.status(422).json({error: "Invalid email or password"})
@@ -1766,10 +1795,14 @@ router.post('/signin-admin', (req, res) => {
 
 router.post('/web/signin-admin', (req, res) => {
     const {email, password} = req.body
+
     if(!email || !password){
         return res.status(422).json({error: "Please add email or password"})
     }
-    Admin.findOne({email:email})
+
+    const email_lowercase = email.toLowerCase()
+
+    Admin.findOne({email:email_lowercase})
         .then(savedAdmin => {
             if(!savedAdmin){
                 return res.status(422).json({error: "Invalid email or password"})
@@ -3386,7 +3419,9 @@ router.put('/admin/coupon', requireAdminLogin, (req,res) => {
         return res.status(422).json({error: "Please add all the fields"})
     }
 
-    Student.findOne({email})
+    const email_lowercase = email.toLowerCase()
+
+    Student.findOne({email:email_lowercase})
         .select("-password")
         .then((student) => {
 
