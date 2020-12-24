@@ -30,6 +30,10 @@ const instructorSchema = new mongoose.Schema({
     pic:{
      type:String,
      default:"https://extras.firstclassbrain.com/instructor-dp.png"
+    },
+    role:{
+        type: String,
+        default: "Instructor"
     }
 })
 

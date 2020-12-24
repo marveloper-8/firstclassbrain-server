@@ -137,27 +137,9 @@ var passwordTransporter = nodemailer.createTransport({
 // })
 
 
-router.post('/verify-email/student', (req, res) => {
-    const {token} = req.body
-
-    Student.findOne({ emailToken: token })
-        .then( student => {
-            if(!student) {
-                return res.status(422).json({error: "Token is invalid, pls contact us for assistance"})
-            }
-            student.emailToken = null
-            student.isVerified = "true"
-            student.save().then( stud =>{
-                res.json({message:`Welcome to Firstclassbrain ${stud.firstName}`})
-            })
-        } )
-
-})
-
 console.log(moment().format('L'))
 
 console.log(moment().add(7, 'days').calendar())
-
 
 router.post('/signup-student', (req, res) => {
     const {
@@ -167,17 +149,16 @@ router.post('/signup-student', (req, res) => {
         phone,
         address,
         classSelected,
-        pic,
-        originalPassword,
-        password
+        pic
     } = req.body
 
-    if(!firstName || !lastName || !email || !phone || !address || !classSelected || !password){
+    if(!firstName || !lastName || !email || !phone || !address || !classSelected){
         return res.status(422).json({error: "Please add all the fields"})
     }
 
-    const email_lowercase = email.toLowerCase()
+    const password = Math.random().toString(36).slice(-10)
 
+    const email_lowercase = email.toLowerCase()
 
     Student.findOne({email: email_lowercase})
         .then((savedStudent) => {
@@ -194,10 +175,8 @@ router.post('/signup-student', (req, res) => {
                         address,
                         classSelected,
                         pic,
-                        originalPassword,
-                        password: hashedPassword,
-                        emailToken: crypto.randomBytes(64).toString('hex'),
-                        isVerified: "false"
+                        originalPassword: password,
+                        password: hashedPassword
                     })
                     student.save()
                         .then(student => {
@@ -487,11 +466,8 @@ router.post('/signup-student', (req, res) => {
                                                         <table border="0" cellpadding="0" cellspacing="0" width="100%" align="left" style="border: none; border-collapse: collapse; border-spacing: 0; mso-table-lspace: 0; mso-table-rspace: 0; table-layout: fixed; width: 100%;">
                                                             <tbody><tr>
                                                                 <td class="p2" style="direction:ltr;text-align:left;color: #000000; font-family: 'UberMoveText-Regular', 'HelveticaNeue', Helvetica, Arial, sans-serif; font-size: 16px; line-height: 22px; padding-bottom: 12px; padding-top: 7px;"><p>Hello ${student.firstName}. You have successfully created an account on Firstclassbrain.<br /><br />
-                                                                Your password current password is <b style="color:teal;">${student.originalPassword}</b>
+                                                                Your password default password is <b style="color:teal;">${student.originalPassword}</b>
                                                                 <br /><br />
-                                                                Verify your account by clicking on the link below. If you do not get redirected to the verify email page, copy the link and paste in your browser. 
-                                                                <br /><br />
-                                                                <a href="https://firstclassbrain.com/verify-account/${student.emailToken}">https://firstclassbrain.com/verify-account/${student.emailToken}</a>
                                                                 <br /><br />
                                                                 <a style="color:#f00">NOTE: Make sure to be logged into your account on the browser used for verification.</a></p>
                                         </td>
@@ -873,7 +849,7 @@ router.post('/signin-student', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)
+                        const token = jwt.sign({_id: savedStudent._id, role: savedStudent.role}, JWT_SECRET)
                         return res.json({token})
                     }
                     else{
@@ -905,7 +881,7 @@ router.post('/web/signin-student', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedStudent._id}, JWT_SECRET)                        
+                        const token = jwt.sign({_id: savedStudent._id, role: savedStudent.role}, JWT_SECRET)                        
                         const {
                             _id, 
                             firstName,
@@ -970,13 +946,13 @@ router.post('/signup-instructor', (req, res) => {
         phone,
         email,
         pic,
-        originalPassword,
-        password
     } = req.body
 
-    if(!firstName || !lastName || !phone || !email || !password || !originalPassword){
+    if(!firstName || !lastName || !phone || !email){
         return res.status(422).json({error: "Please add all the fields"})
     }
+
+    const password = Math.random().toString(36).slice(-10)
 
     const email_lowercase = email.toLowerCase()
     
@@ -993,7 +969,7 @@ router.post('/signup-instructor', (req, res) => {
                         phone,
                         email,
                         pic,
-                        originalPassword,
+                        originalPassword: password,
                         password: hashedPassword
                     })
                     instructor.save()
@@ -1692,7 +1668,7 @@ router.post('/signin-instructor', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedInstructor._id}, JWT_SECRET)
+                        const token = jwt.sign({_id: savedInstructor._id, role: savedInstructor.role}, JWT_SECRET)
                         return res.json({token})
                     }
                     else{
@@ -1780,7 +1756,7 @@ router.post('/signin-admin', (req, res) => {
                 .then(doMatch => {
                     if(doMatch){
                         // return res.json({message: "Successfully logged in"})
-                        const token = jwt.sign({_id: savedAdmin._id}, JWT_SECRET)
+                        const token = jwt.sign({_id: savedAdmin._id, role: savedAdmin.role}, JWT_SECRET)
                         return res.json({token})
                     }
                     else{
@@ -3523,5 +3499,71 @@ router.delete('/delete-instructor/:postId', (req, res) => {
     })
 })
 
+
+router.get('/list_attendance/:topicId', requireAdminLogin, (req, res) => {
+
+    Test.findOne({_id: req.params.topicId})
+    .then(test => {
+
+        const attendc = test.attendance
+
+        let objectIdArray = attendc.map(s => mongoose.Types.ObjectId(s))
+
+        console.log(objectIdArray)
+
+        Student.find({"_id" : {"$in" : objectIdArray}})
+        .then(students => {
+            res.json({students})
+        }).catch(err => {
+            console.log(err)
+        })
+
+    })
+    .catch(err => {
+        console.log(err)
+    })
+
+})
+
+router.post('/topic/attendance/:topicId', requireStudentLogin, (req, res) => {
+
+    Test.findOne({_id: req.params.topicId})
+    .then(test => {
+
+        const attendc = test.attendance
+
+        if(attendc.includes(req.student._id)) {
+            return res.json({message: "Topic already taken by you"})
+        } else {
+            attendc.push(req.student._id)
+            test.save().then((takenTest)=>{
+                return res.json({test: takenTest})
+            })
+        }
+
+    })
+    .catch(err => {
+        console.log(err)
+    })
+
+})
+
+
+
+router.get('/getTopic', (req, res) => {
+
+    Test.find()
+    .then(tests => {
+        res.json({tests})
+        console.log(tests)
+
+    })
+    .catch(err => {
+        console.log(err)
+    })
+
+})
+
+// req.student._id
 
 module.exports = router
