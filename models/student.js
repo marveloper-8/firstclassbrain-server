@@ -15,12 +15,6 @@ const studentSchema = new mongoose.Schema({
         unique: true,
         lowercase: true
     },
-    emailToken:{
-        type: String
-    },
-    isVerified:{
-        type: String
-    },
     phone:{
         type: Number,
         required: true
@@ -59,6 +53,10 @@ const studentSchema = new mongoose.Schema({
     pic:{
      type:String,
      default:"https://extras.firstclassbrain.com/student-dp.png"
+    },
+    role:{
+        type: String,
+        default: "Student"
     },
     bankAuth: {
         authorization_code: { type: String },

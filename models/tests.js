@@ -84,6 +84,7 @@ const testSchema = new mongoose.Schema({
             ref:"Student"
         }
     }],
+    attendance: [String],
     postedBy: {
         type: ObjectId,
         ref: "Admin"

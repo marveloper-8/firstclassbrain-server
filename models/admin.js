@@ -31,6 +31,10 @@ const adminSchema = new mongoose.Schema({
     pic:{
         type:String,
         default:"https://extras.firstclassbrain.com/student-dp.png"
+    },
+    role:{
+        type: String,
+        default: "Admin"
     }
 })
 
