@@ -3387,7 +3387,7 @@ router.put('/settings',requireStudentLogin,(req,res)=>{
     })
 })
 
-router.put('/admin/coupon', requireAdminLogin, (req,res) => {
+router.put('/admin/coupon', (req,res) => {
 
     const { subInterval, email } = req.body
 
