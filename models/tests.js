@@ -44,6 +44,14 @@ const testSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    date: {
+        type: Date,
+        required: true
+    },
+    time: {
+        type: Date,
+        required: true
+    },
     questions: [{
         question: {
             type: String,

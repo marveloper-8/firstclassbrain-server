@@ -68,6 +68,14 @@ const postSchema = new mongoose.Schema({
         type: String,
         default:"https://extras.firstclassbrain.com/abc_packet.pdf"
     },
+    date: {
+        type: Date,
+        required: true
+    },
+    time: {
+        type: Date,
+        required: true
+    },
     likes: [
         {
             type: ObjectId,
