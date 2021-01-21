@@ -47,17 +47,17 @@ router.post('/upload-test', (req, res) => {
         time,
         date
     })
-    Test.findOne({topic: topic})
-        .then((savedTest) => {
-            if(savedTest){
-                return res.status(422).json({error: "An assignment for this topic already exists!"})
-            }
-            test.save().then(result => {
-                return res.json({test: result})
-            })
-            .catch(err => { console.log(err) })
-        })
-        .catch(err => { console.log(err) })
+    // Test.findOne({topic: topic})
+    //     .then((savedTest) => {
+    //         if(savedTest){
+    //             return res.status(422).json({error: "An assignment for this topic already exists!"})
+    //         }
+    //         test.save().then(result => {
+    //             return res.json({test: result})
+    //         })
+    //         .catch(err => { console.log(err) })
+    //     })
+    //     .catch(err => { console.log(err) })
 
 })
 
