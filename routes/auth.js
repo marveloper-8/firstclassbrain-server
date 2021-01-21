@@ -3566,4 +3566,13 @@ router.get('/getTopic', (req, res) => {
 
 // req.student._id
 
+router.get('instructorbyid/:instId', (req, res) => {
+    Instructor.findOne({_id: req.params.instId})
+    .then(instructor => {
+       res.json({instructor})
+    }).catch(err => {
+        return res.status(404).json({error: "Instructor not found"})
+    })
+})
+
 module.exports = router
