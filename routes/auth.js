@@ -3566,7 +3566,7 @@ router.get('/getTopic', (req, res) => {
 
 // req.student._id
 
-router.get('instructorbyid/:instId', (req, res) => {
+router.get('/instructorbyid/:instId', (req, res) => {
     Instructor.findOne({_id: req.params.instId})
     .then(instructor => {
        res.json({instructor})
