@@ -26,7 +26,7 @@ router.post('/upload-test', (req, res) => {
         time,
         date
     } = req.body
-    if(!type || !classSelected || !subject || !term || !week || !minutes || !topic || !questions || !postedByWho || !postedByWhoLink || !title || !time || !date){
+    if(!type || !classSelected || !subject || !term || !minutes || !questions || !postedByWho || !postedByWhoLink || !title || !time || !date){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
