@@ -11,11 +11,11 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     type: {
-        type: String,
+        type: Number,
         required: true
     },
     classSelected: {
-        type: String,
+        type: Number,
         required: true
     },
     subject: {
@@ -23,18 +23,18 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     term: {
-        type: String,
+        type: Number,
         requred: true
     },
     week: {
-        type: String
+        type: Number
     },
     hours: {
-        type: String,
+        type: Number,
         default: 0
     },
     minutes: {
-        type: String
+        type: Number
     },
     topic: {
         type: String
