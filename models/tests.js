@@ -11,11 +11,11 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     type: {
-        type: String,
+        type: Number,
         required: true
     },
     classSelected: {
-        type: String,
+        type: Number,
         required: true
     },
     subject: {
@@ -23,18 +23,19 @@ const testSchema = new mongoose.Schema({
         required: true
     },
     term: {
-        type: String,
+        type: Number,
         requred: true
     },
     week: {
-        type: String
+        type: Number
     },
     hours: {
-        type: String,
-        default: 0
+        type: Number,
+        default: 0,
+        required: true
     },
     minutes: {
-        type: String
+        type: Number
     },
     topic: {
         type: String
@@ -83,6 +84,10 @@ const testSchema = new mongoose.Schema({
         image: {
             type: String
         },
+        score: {
+            type: Number,
+            default: 0
+        }
     }],
     students:[{
         score: { type: String },
