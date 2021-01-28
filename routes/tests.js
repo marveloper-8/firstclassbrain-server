@@ -9,24 +9,23 @@ const TestItem = mongoose.model("TestItem")
 
 
 router.post('/upload-test', (req, res) => {
-    const {
+    const { 
         type,
         classSelected,
         subject,
         term,
         week,
+        topic,
         hours,
         minutes,
-        topic,
         postedByWho,
         postedByWhoLink,
         image,
         title,
+        questions,
         time,
-        date,
-        questions
+        date
     } = req.body
-
     if(!type || !classSelected || !subject || !term || !minutes || !questions || !postedByWho || !postedByWhoLink || !title || !time || !date){
         return res.status(422).json({error: "Please add all the fields"})
     }
@@ -44,17 +43,22 @@ router.post('/upload-test', (req, res) => {
         postedByWhoLink,
         image,
         title,
+        questions,
         time,
-        date,
-        questions
+        date
     })
-    test.save().then(result => {
-        return res.json({test: result})
-    })
-    .catch(err => {
-        return res.json({err})
-        console.log(err)
-    })
+    Test.findOne({topic: topic})
+        .then((savedTest) => {
+            if(savedTest){
+                return res.status(422).json({error: "An assignment for this topic already exists!"})
+            }
+            test.save().then(result => {
+                return res.json({test: result})
+            })
+            .catch(err => { console.log(err) })
+        })
+        .catch(err => { console.log(err) })
+
 })
 
 router.post('/update-test-image/:postId',( req,res)=>{
@@ -66,6 +70,42 @@ router.post('/update-test-image/:postId',( req,res)=>{
             }
             res.json({message:"Record has been Updated..!!", result})
     })
+})
+
+router.put('/update-testimage/:testId',( req,res)=>{
+
+    const { questionId, image } = req.body
+
+    let update = await Test.findByIdAndUpdate({_id: req.params.testId, questions: {_id: questionId}}, {
+        $set: {
+            questions: {image}
+        }
+    }, {
+        upsert: true,
+        new: true
+    })
+    if (!update) {
+        return res.status(422).json({
+            success: false,
+            message: "Failed to update image. Please try again shortly."
+        })
+    }
+
+    const data = await Test.findOne({_id: req.params.testId})
+    if (!data) {
+        return res.status(422).json({
+            success: false,
+            message: "Failed to update image. Please try again shortly."
+        })
+    }
+
+
+    return res.status(422).json({
+        success: true,
+        message: "Successfully updated image...",
+        data
+    })
+    
 })
 
 router.get('/all-tests', (req, res) => {
@@ -122,7 +162,7 @@ router.get('/test-item-details/:testId', (req, res) => {
     })
 })
 
-router.get('/assignment-details/:testId', (req, res) => {
+router.get('/student/test-details/:testId', (req, res) => {
     Test.findOne({topic: req.params.testId})
     .then(test => {
         Test.find({testId: req.params.testId})
@@ -209,17 +249,6 @@ router.put('/take-test',requireStudentLogin,(req,res)=>{
         })
         .catch( err =>  res.status(404).json({error: "Test not found..."}) )
 
-})
-
-router.post('/update-correction-image/:testId',( req,res)=>{
-    const { image } = req.body
-    TestItem.findByIdAndUpdate(req.params.testId,{$set:{image}},{new:true},
-        (err, result)=>{
-            if(err){
-                return res.status(422).json({error:"Image cannot post"})
-            }
-            res.json({message:"Record has been Updated..!!", result})
-    })
 })
 
 
