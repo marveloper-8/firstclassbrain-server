@@ -20,7 +20,6 @@ router.post('/upload-test', (req, res) => {
         minutes,
         postedByWho,
         postedByWhoLink,
-        image,
         title,
         questions,
         time,
@@ -41,7 +40,6 @@ router.post('/upload-test', (req, res) => {
         topic,
         postedByWho,
         postedByWhoLink,
-        image,
         title,
         questions,
         time,
@@ -72,13 +70,14 @@ router.post('/update-test-image/:postId',( req,res)=>{
     })
 })
 
-router.put('/update-testimage/:testId',( req,res)=>{
+router.put('/update-testimage/:testId', async ( req,res)=>{
 
     const { questionId, image } = req.body
 
-    let update = await Test.findByIdAndUpdate({_id: req.params.testId, questions: {_id: questionId}}, {
+    
+    let update = await Test.updateOne({_id: req.params.testId, "questions._id": questionId}, {
         $set: {
-            questions: {image}
+            "questions.$.image" : image
         }
     }, {
         upsert: true,
@@ -91,6 +90,7 @@ router.put('/update-testimage/:testId',( req,res)=>{
         })
     }
 
+    
     const data = await Test.findOne({_id: req.params.testId})
     if (!data) {
         return res.status(422).json({
