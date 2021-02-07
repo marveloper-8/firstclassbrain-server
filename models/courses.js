@@ -50,20 +50,6 @@ const postSchema = new mongoose.Schema({
         type: String,
         default:"https://extras.firstclassbrain.com/add-image.png"
     },
-    thirdTextSlide: {
-        type: String
-    },
-    thirdImageSlide: {
-        type: String,
-        default:"https://extras.firstclassbrain.com/add-image.png"
-    },
-    fourthTextSlide: {
-        type: String
-    },
-    fourthImageSlide: {
-        type: String,
-        default:"https://extras.firstclassbrain.com/add-image.png"
-    },
     pdf:{
         type: String,
         default:"https://extras.firstclassbrain.com/abc_packet.pdf"

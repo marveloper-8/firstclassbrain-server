@@ -70,7 +70,7 @@ router.post('/update-test-image/:postId',( req,res)=>{
     })
 })
 
-router.put('/update-testimage/:testId', async ( req,res)=>{
+router.put('/update-test-image/:testId', async ( req,res)=>{
 
     const { questionId, image } = req.body
 

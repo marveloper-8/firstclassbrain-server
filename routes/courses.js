@@ -20,13 +20,9 @@ router.post('/upload-course', (req, res) => {
         video,
         firstTextSlide,
         secondTextSlide,
-        thirdTextSlide,
-        fourthTextSlide,
         courseThumbnail,
         firstImageSlide,
         secondImageSlide,
-        thirdImageSlide,
-        fourthImageSlide,
         postedByWho,
         postedByWhoLink,
         pdf,
@@ -34,7 +30,7 @@ router.post('/upload-course', (req, res) => {
         time
     } = req.body
 
-    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !thirdTextSlide || !fourthTextSlide || !postedByWho || !postedByWhoLink || !date || !time){
+    if(!classSelected || !subject || !term || !week || !courseTitle || !firstTextSlide || !secondTextSlide || !postedByWho || !postedByWhoLink || !date || !time){
         return res.status(422).json({error: "Please add all the fields"})
     }
     
@@ -48,13 +44,9 @@ router.post('/upload-course', (req, res) => {
         courseTitle,
         firstTextSlide,
         secondTextSlide,
-        thirdTextSlide,
-        fourthTextSlide,
         courseThumbnail,
         firstImageSlide,
         secondImageSlide,
-        thirdImageSlide,
-        fourthImageSlide,
         postedByWho,
         postedByWhoLink,
         pdf,
@@ -137,6 +129,17 @@ router.post('/update-pdf/:postId',( req,res)=>{
     })
 })
 
+router.post('/update-course-title/:postId',( req,res)=>{
+    const { courseTitle } = req.body
+    Post.findByIdAndUpdate(req.params.postId,{$set:{courseTitle}},{new:true},
+        (err, result)=>{
+            if(err){
+                return res.status(422).json({error:"Test title cannot be updated"})
+            }
+            res.json({message:"Record has been Updated..!!", result})
+    })
+})
+
 router.post('/update-first-image/:postId',( req,res)=>{
     const { firstImageSlide } = req.body
     Post.findByIdAndUpdate(req.params.postId,{$set:{firstImageSlide}},{new:true},
@@ -151,28 +154,6 @@ router.post('/update-first-image/:postId',( req,res)=>{
 router.post('/update-second-image/:postId',( req,res)=>{
     const { secondImageSlide } = req.body
     Post.findByIdAndUpdate(req.params.postId,{$set:{secondImageSlide}},{new:true},
-        (err, result)=>{
-            if(err){
-                return res.status(422).json({error:"Image cannot post"})
-            }
-            res.json({message:"Record has been Updated..!!", result})
-    })
-})
-
-router.post('/update-third-image/:postId',( req,res)=>{
-    const { thirdImageSlide } = req.body
-    Post.findByIdAndUpdate(req.params.postId,{$set:{thirdImageSlide}},{new:true},
-        (err, result)=>{
-            if(err){
-                return res.status(422).json({error:"Image cannot post"})
-            }
-            res.json({message:"Record has been Updated..!!", result})
-    })
-})
-
-router.post('/update-fourth-image/:postId',( req,res)=>{
-    const { fourthImageSlide } = req.body
-    Post.findByIdAndUpdate(req.params.postId,{$set:{fourthImageSlide}},{new:true},
         (err, result)=>{
             if(err){
                 return res.status(422).json({error:"Image cannot post"})
