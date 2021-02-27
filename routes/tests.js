@@ -86,7 +86,7 @@ router.put('/update-test-image/:testId', async ( req,res)=>{
     if (!update) {
         return res.status(422).json({
             success: false,
-            message: "Failed to update image. Please try again shortly."
+            message: "Failed to upload image. Please try again shortly."
         })
     }
 
